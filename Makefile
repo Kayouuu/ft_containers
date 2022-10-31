@@ -6,12 +6,16 @@
 #    By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/20 09:59:34 by psaulnie          #+#    #+#              #
-#    Updated: 2022/10/20 10:03:10 by psaulnie         ###   ########.fr        #
+#    Updated: 2022/10/27 14:34:42 by psaulnie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-LST_SRCS = main.cpp
-LST_INCS = 
+#need to add .tpp
+
+LST_SRCS = main.cpp \
+LST_INCS = ft_containers.hpp \
+			stack/stack.hpp \
+			vector/vector.hpp
 LST_OBJS = ${SRCS:.cpp=.o}
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
@@ -19,7 +23,7 @@ CC = c++
 NAME = ft_containers
 
 SRCS	:=	$(addprefix srcs/,$(LST_SRCS))
-INCS	:=	$(addprefix incs/,$(LST_INCS))
+INCS	:=	$(addprefix srcs/,$(LST_INCS))
 
 .PHONY:	all clean fclean re
 
