@@ -1,151 +1,327 @@
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
+// TOFIX Not needed at the end
+#include <stdexcept>
 #include <memory>
+#include "iterator.hpp"
 
-template<
-	class T,
-	class Allocator = std::allocator<T>
->
-class vector
+namespace	ft
 {
-	private:
+	template<
+		class T,
+		class Allocator = std::allocator<T>
+	>
+	class vector
+	{
+	
+		// Iterator
+		class	RandomAccessIterator;
+		class	ConstRandomAccessIterator;
+		class	ReverseRandomAccessIterator;
+		class	ConstReverseRandomAccessIterator;
 
-		// Member types
-		typedef typename T							value_type;
-		typedef	typename Allocator					allocator_type;
-		typedef	typename size_t						size_type;
-		typedef	typename ptrdiff_t					difference_type;
-		// TODO Need to check if these two below are working correctly
-		typedef	typename value_type&				reference;
-		typedef	typename const value_type&			const_reference;
-		typedef	typename Allocator::pointer			pointer;
-		typedef	typename Allocator::const_pointer	const_pointer;
-		// TODO need to use self-coded iterator
-		typedef	typename std::vector<T, Allocator>::iterator				iterator;
-		typedef	typename std::vector<T, Allocator>::const_iterator			const_iterator;
-		typedef	typename std::vector<T, Allocator>::reverse_iterator		reverse_iterator;
-		typedef	typename std::vector<T, Allocator>::const_reverse_iterator	const_reverse_iterator;
+		private:
 
-		Allocator	_alloc;
-		T			*_arr;
-		size_t		_size;
-		size_t		_capacity;
-	public:
-		vector();
-		vector(vector const &copy);
-		vector	&operator=(vector const &copy);
-		explicit vector(const Allocator& alloc );
-		explicit vector( size_type count, const T& value = T(), const Allocator& alloc = Allocator());
-		template< class InputIt >
-		vector( InputIt first, InputIt last, const Allocator& alloc = Allocator() );
+			// Member types
+			typedef T									value_type;
+			typedef	Allocator							allocator_type;
+			typedef	size_t								size_type;
+			typedef	ptrdiff_t							difference_type;
+			// TODO Need to check if these two below are working correctly
+			typedef	value_type&							reference;
+			typedef	const value_type&					const_reference;
+			typedef	typename Allocator::pointer			pointer;
+			typedef	typename Allocator::const_pointer	const_pointer;
+			typedef	typename ft::vector<T, Allocator>::RandomAccessIterator				iterator;
+			typedef	typename ft::vector<T, Allocator>::ConstRandomAccessIterator		const_iterator;
+			typedef	typename ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
+			typedef	typename ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
 
-		// Destructor
-		~vector();
+			Allocator	_alloc;
+			T			*_arr;
+			size_t		_size;
+			size_t		_capacity;
+		public:
+			vector() 
+			{
+				// TOCHECK
+				this->_size = 0;
+				this->_capacity = 0;
+			}
 
-		// Assign
-		void assign(size_type count, const T& value);
-		template<class InputIt>
-		void assign(InputIt first, InputIt last);
+			vector(vector const &copy)
+			{
+				if (*this != copy)
+					*this = copy;
+			}
 
-		// Get_allocator
-		allocator_type get_allocator() const;
+			vector	&operator=(vector const &copy)
+			{
+				// TODO Deep copy, do at the end
+				return (*this);
+			}
 
-		// Element access
-		reference		at( size_type pos );
-		const_reference	at( size_type pos ) const;
-		reference		operator[](size_type pos);
-		const_reference	operator[](size_type pos) const;
+			explicit vector(const allocator_type& alloc)
+			{
+				// TOCHECK ~Need to check if it's enough
+				this->_alloc = alloc;
+			}
 
-		reference		front();
-		const_reference	front() const;
+			explicit vector(size_type count, const T& value = T(), const allocator_type& alloc = Allocator())
+			{
+				// TODO
+			}
 
-		reference		back();
-		const_reference	back() const;
+			template<class InputIt>
+			vector(InputIt first, InputIt last, const allocator_type& alloc = Allocator())
+			{
+				// TODO
+			}
 
-		T		*data();
-		const T	*data() const;
-		
-		// Iterators
-		iterator		begin();
-		const_iterator	begin() const;
+			// Destructor
+			~vector()
+			{
+				// TODO
+			}
 
-		iterator		end();
-		const_iterator	end() const;
+			// Assign
+			void assign(size_type count, const T& value)
+			{
+				// TODO
+			}
 
-		reverse_iterator		rbegin();
-		const_reverse_iterator	rbegin() const;
+			template<class InputIt>
+			void assign(InputIt first, InputIt last)
+			{
+				// TODO
+			}
 
-		reverse_iterator		rend();
-		const_reverse_iterator	rend() const;
+			// Get_allocator
+			allocator_type get_allocator() const
+			{
+				// TOCHECK Need to check if it's correct
+				return (this->_alloc);
+			}
 
-		// Capacity
-		bool		empty() const;
-		size_type	size() const;
-		size_type	max_size() const;
-		void		reserve(size_type new_cap);
-		size_type	capacity() const;
+			// Element access
+			reference	at(size_type pos)
+			{
+				// TOFIX Use self-made out_of_range exception with right msg
+				if (!(pos < this->_size))
+					throw	std::out_of_range("out of range");
+				return (this->_arr[pos]);
+			}
 
-		// Modifiers
-		void		clear();
+			const_reference	at(size_type pos) const
+			{
+				// TOFIX Use self-made out_of_range exception with right msg
+				if (!(pos < this->_size))
+					throw	std::out_of_range("out of range");
+				return (this->_arr[pos]);
+			}
 
-		iterator	insert(const_iterator pos, const T &value);
-		iterator	insert(const_iterator pos, size_type count, const T& value);
-		template<class InputIt>
-		iterator	insert(const_iterator pos, InputIt first, InputIt last);
+			reference	&operator[](size_type pos) { return (this->_arr[pos]); }
 
-		iterator	erase(iterator pos);
-		iterator	erase(iterator first, iterator last);
+			const_reference	&operator[](size_type pos) const;
 
-		void		push_back(const T& value);
-		void		pop_back();
-		void		resize(size_type count, T value = T());
-		void		swap(vector &other);
+			reference	front()
+			{
+				// TOCHECK
+				// if (this->empty())
+				// 	return ();
+				return (this->_arr[0]);
+			}
 
-		// Friend functions
+			const_reference	front() const
+			{
+				// TOCHECK
+				// if (this->empty())
+				// 	return ();
+				return (this->_arr[0]);
+			}
 
-		template<class T, class Allocator>
-		friend void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+			reference	back()
+			{
+				// TOCHECK
+				// if (this->empty())
+				// 	return ();
+				return (this->_arr[this->_size - 1]);
+			}
 
-		template< class T, class Allocator>
-		friend bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			const_reference	back() const
+			{
+				// TOCHECK
+				// if (this->empty())
+				// 	return ();
+				return (this->_arr[this->_size - 1]);
+			}
 
-		template< class T, class Allocator>
-		friend bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			T	*data()
+			{
+				// TOCHECK
+				if (this->_size == 0)
+					return (NULL);
+				return (this->_arr);
+			}
 
-		template< class T, class Allocator>
-		friend bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			const T	*data() const
+			{
+				// TOCHECK
+				if (this->_size == 0)
+					return (NULL);
+				return (this->_arr);
+			}
 
-		template< class T, class Allocator>
-		friend bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// Iterators
+			iterator		begin()
+			{
+				// TODO
+			}
 
-		template< class T, class Allocator>
-		friend bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			const_iterator	begin() const
+			{
+				// TODO
+			}
 
-		template< class T, class Allocator>
-		friend bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
-};
+			iterator	end()
+			{
+				// TODO
+			}
 
-// TODO swap must be used like this : ft::swap()
-template<class T, class Allocator>
-void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+			const_iterator	end() const
+			{
+				// TODO
+			}
 
-template< class T, class Allocator>
-bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			reverse_iterator	rbegin()
+			{
+				// TODO
+			}
 
-template< class T, class Allocator>
-bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			const_reverse_iterator	rbegin() const
+			{
+				// TODO
+			}
 
-template< class T, class Allocator>
-bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			reverse_iterator	rend()
+			{
+				// TODO
+			}
 
-template< class T, class Allocator>
-bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			const_reverse_iterator	rend() const
+			{
+				// TODO
+			}
 
-template< class T, class Allocator>
-bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// Capacity
+			bool		empty() const
+			{
+				if (this->begin() == this->end())
+					return (true);
+				return (false);
+			}
 
-template< class T, class Allocator>
-bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			size_type	size() const { return (this->size); }
 
+			size_type	max_size() const { return (this->_alloc.max_size()); }
+
+			void	reserve(size_type new_cap)
+			{
+				// TODO
+			}
+
+			size_type	capacity() const { return (this->_capacity); }
+
+			// Modifiers
+			void		clear()
+			{
+				// TODO
+			}
+
+			iterator	insert(const_iterator pos, const T &value)
+			{
+				// TODO
+			}
+
+			iterator	insert(const_iterator pos, size_type count, const T& value)
+			{
+				// TODO
+			}
+
+			template<class InputIt>
+			iterator	insert(const_iterator pos, InputIt first, InputIt last)
+			{
+				// TODO
+			}
+
+			iterator	erase(iterator pos)
+			{
+				// TODO
+			}
+
+			iterator	erase(iterator first, iterator last)
+			{
+				// TODO
+			}
+
+			void		push_back(const T& value)
+			{
+				// TODO
+			}
+
+			void		pop_back()
+			{
+				// TODO
+			}
+
+			void		resize(size_type count, T value = T())
+			{
+				// TODO
+			}
+
+			void		swap(vector &other)
+			{
+				// TODO
+			}
+
+			// Friend functions
+
+			friend void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+
+			friend bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+			friend bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+			friend bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+			friend bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+			friend bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+			friend bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	};
+
+	// TODO swap must be used like this : ft::swap()
+	template<class T, class Allocator>
+	void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+
+	template< class T, class Allocator>
+	bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+}
 #endif

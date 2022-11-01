@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:20:42 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/10/31 13:23:26 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/01 10:46:59 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,10 @@ class stack
 {
 	private:
 		typedef	Container	container_type;
-		typedef Container::value_type	value_type;
-		typedef	Container::size_type	size_type;
-		typedef	Container::reference	reference;
-		typedef	Container::const_reference	const_reference;
+		typedef typename Container::value_type	value_type;
+		typedef	typename Container::size_type	size_type;
+		typedef	typename Container::reference	reference;
+		typedef	typename Container::const_reference	const_reference;
 		Container	_container;
 	public:
 		// Constructors
