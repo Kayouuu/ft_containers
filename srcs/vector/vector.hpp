@@ -20,12 +20,16 @@ namespace	ft
 		class	RandomAccessIterator
 		{
 			public:
-				// TODO Use ft::iterator_traits
-				typedef int		value_type;
-				typedef	int*	pointer;
-				typedef	int&	reference;
+				// TODO Use ft::iterator_traits ?
+				typedef T		value_type;
+				typedef	T*		pointer;
+				typedef	T&		reference;
+				// TOFIX Use self-made types
+				typedef std::ptrdiff_t	difference_type;
+				typedef	std::random_access_iterator_tag	iterator_category;
 				
 				// Constructors
+				RandomAccessIterator() { };
 				RandomAccessIterator(pointer ptr) : _ptr(ptr) { };
 				RandomAccessIterator(RandomAccessIterator const &copy) { *this = copy; };
 				RandomAccessIterator	&operator=(RandomAccessIterator const &copy)
@@ -41,31 +45,42 @@ namespace	ft
 				pointer		operator->() { return (_ptr); }
 				RandomAccessIterator	&operator++() { _ptr++; return (*this); }
 				RandomAccessIterator	operator++(int) { RandomAccessIterator tmp = *this; ++(*this); return (tmp); }
+				RandomAccessIterator	&operator--() { _ptr--; return (*this); }
+				RandomAccessIterator	operator--(int) { RandomAccessIterator tmp = *this; --(*this); return (tmp); }
+				RandomAccessIterator	&operator+=(RandomAccessIterator const &rhs) { this->_ptr += rhs._ptr; return (*this); }
+				RandomAccessIterator	&operator-=(RandomAccessIterator const &rhs) { this->_ptr -= rhs._ptr; return (*this); }
+				RandomAccessIterator	&operator[](size_t pos) { return (this->_ptr[pos]); }
 				friend bool	operator==(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
 				friend bool	operator!=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
+				friend bool	operator>(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr > b._ptr); }
+				friend bool	operator<(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr < b._ptr); }
+				friend bool	operator>=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr >= b._ptr); }
+				friend bool	operator<=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr <= b._ptr); }
+				friend	RandomAccessIterator	operator+(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs) { lhs += rhs; return (lhs); }
+				friend	RandomAccessIterator	operator-(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs) { lhs += rhs; return (lhs); }
 			private:
 				pointer	_ptr;
 		};
 		class	ReverseRandomAccessIterator;
 		class	ConstReverseRandomAccessIterator;
 
+		public:
+			//Iterators
+			typedef ft::vector<T, Allocator>::RandomAccessIterator				iterator;
+			typedef	const ft::vector<T, Allocator>::RandomAccessIterator		const_iterator;
+			typedef ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
+			typedef ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
 		private:
 
 			// Member types
 			typedef T									value_type;
 			typedef	Allocator							allocator_type;
 			typedef	size_t								size_type;
-			typedef	ptrdiff_t							difference_type;
-			// TODO Need to check if these two below are working correctly
+			typedef	ptrdiff_t							difference_type; // TOCHECK
 			typedef	value_type&							reference;
 			typedef	const value_type&					const_reference;
 			typedef	typename Allocator::pointer			pointer;
 			typedef	typename Allocator::const_pointer	const_pointer;
-			//Iterators
-			typedef ft::vector<T, Allocator>::RandomAccessIterator				iterator;
-			typedef	const ft::vector<T, Allocator>::RandomAccessIterator		const_iterator;
-			typedef ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
-			typedef ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
 
 			Allocator	_alloc;
 			T			*_arr;
@@ -211,32 +226,24 @@ namespace	ft
 			reference	front()
 			{
 				// TOCHECK
-				// if (this->empty())
-				// 	return ();
 				return (this->_arr[0]);
 			}
 
 			const_reference	front() const
 			{
 				// TOCHECK
-				// if (this->empty())
-				// 	return ();
 				return (this->_arr[0]);
 			}
 
 			reference	back()
 			{
 				// TOCHECK
-				// if (this->empty())
-				// 	return ();
 				return (this->_arr[this->_size - 1]);
 			}
 
 			const_reference	back() const
 			{
 				// TOCHECK
-				// if (this->empty())
-				// 	return ();
 				return (this->_arr[this->_size - 1]);
 			}
 
@@ -259,22 +266,23 @@ namespace	ft
 			// Iterators
 			iterator		begin()
 			{
-				// TODO
+				return (iterator(&this->_arr[0]));
 			}
 
 			const_iterator	begin() const
 			{
-				// TODO
+				// TOCHECK
+				return (const_iterator(&this->_arr[0]));
 			}
 
 			iterator	end()
 			{
-				// TODO
+				return (iterator(&this->_arr[this->_size]));
 			}
 
 			const_iterator	end() const
 			{
-				// TODO
+				return (const_iterator(&this->_arr[this->_size]));
 			}
 
 			reverse_iterator	rbegin()
@@ -365,13 +373,16 @@ namespace	ft
 				// TOCHECK
 				if (this->_size + 1 >= this->_capacity)
 					this->realloc(this->_capacity + 1);
+				this->_alloc.construct(this->_arr + this->_size, value);
 				this->_size++;
-				this->_arr[this->_size - 1] = value;
 			}
 
 			void		pop_back()
 			{
-				// TODO
+				// TOCHECK
+				this->_alloc.destroy(this->_arr + this->_size);
+				if (this->_size > 1)
+					this->_size--;
 			}
 
 			void		resize(size_type count, T value = T())
