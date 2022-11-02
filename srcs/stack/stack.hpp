@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:20:42 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/01 10:46:59 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/01 13:33:14 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 
 template<
 	class T,
-	class Container = std::vector<T> // TODO remplacer par ft::vector<T>
+	class Container = ft::vector<T>
 >
 class stack
 {

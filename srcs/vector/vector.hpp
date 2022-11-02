@@ -3,8 +3,9 @@
 
 // TOFIX Not needed at the end
 #include <stdexcept>
+
 #include <memory>
-#include "iterator.hpp"
+// #include "iterator.hpp"
 
 namespace	ft
 {
@@ -16,8 +17,35 @@ namespace	ft
 	{
 	
 		// Iterator
-		class	RandomAccessIterator;
-		class	ConstRandomAccessIterator;
+		class	RandomAccessIterator
+		{
+			public:
+				// TODO Use ft::iterator_traits
+				typedef int		value_type;
+				typedef	int*	pointer;
+				typedef	int&	reference;
+				
+				// Constructors
+				RandomAccessIterator(pointer ptr) : _ptr(ptr) { };
+				RandomAccessIterator(RandomAccessIterator const &copy) { *this = copy; };
+				RandomAccessIterator	&operator=(RandomAccessIterator const &copy)
+				{
+					_ptr = copy._ptr;
+					return (*this);
+				};
+				// Destructor
+				~RandomAccessIterator() { };
+
+				// Operator overload
+				reference	operator*() const { return (*_ptr); }
+				pointer		operator->() { return (_ptr); }
+				RandomAccessIterator	&operator++() { _ptr++; return (*this); }
+				RandomAccessIterator	operator++(int) { RandomAccessIterator tmp = *this; ++(*this); return (tmp); }
+				friend bool	operator==(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
+				friend bool	operator!=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
+			private:
+				pointer	_ptr;
+		};
 		class	ReverseRandomAccessIterator;
 		class	ConstReverseRandomAccessIterator;
 
@@ -33,15 +61,28 @@ namespace	ft
 			typedef	const value_type&					const_reference;
 			typedef	typename Allocator::pointer			pointer;
 			typedef	typename Allocator::const_pointer	const_pointer;
-			typedef	typename ft::vector<T, Allocator>::RandomAccessIterator				iterator;
-			typedef	typename ft::vector<T, Allocator>::ConstRandomAccessIterator		const_iterator;
-			typedef	typename ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
-			typedef	typename ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
+			//Iterators
+			typedef ft::vector<T, Allocator>::RandomAccessIterator				iterator;
+			typedef	const ft::vector<T, Allocator>::RandomAccessIterator		const_iterator;
+			typedef ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
+			typedef ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
 
 			Allocator	_alloc;
 			T			*_arr;
 			size_t		_size;
 			size_t		_capacity;
+
+			void		realloc(size_type new_capacity)
+			{
+				if (new_capacity <= this->_capacity * 2)
+					new_capacity = this->_capacity * 2;
+				T	*new_arr = this->_alloc.allocate(new_capacity);
+				for (int i = 0; i < this->_capacity; i++)
+					new_arr[i] = this->_arr[i];
+				this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_arr = new_arr;
+				this->_capacity = new_capacity;
+			}
 		public:
 			vector() 
 			{
@@ -58,7 +99,20 @@ namespace	ft
 
 			vector	&operator=(vector const &copy)
 			{
-				// TODO Deep copy, do at the end
+				// TOCHECK
+				int	i = 0;
+				this->_alloc = copy._alloc;
+				this->_size = copy._size;
+				this->_capacity = copy._capacity;
+				this->_arr = this->_alloc.allocate(this->_capacity);
+				if (this->_size > 0)
+				{
+					while (i < this->_capacity)
+					{
+						this->_arr[i] = this->copy._arr[i];
+						i++;
+					}
+				}
 				return (*this);
 			}
 
@@ -82,19 +136,48 @@ namespace	ft
 			// Destructor
 			~vector()
 			{
-				// TODO
+				// TOCHECK ~Need to check if it's enough
+				if (this->_capacity > 0)
+					this->_alloc.deallocate(this->_arr, this->_capacity);
 			}
 
 			// Assign
 			void assign(size_type count, const T& value)
 			{
-				// TODO
+				// TOCHECK ~Need to check if it's enough
+				if (this->_capacity > 0)
+					this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_arr = this->_alloc.allocate(count);
+				this->_size = count;
+				this->_capacity = count;
+				for (int i = 0; i < count; i++)
+					this->_arr[i] = value;
 			}
 
 			template<class InputIt>
 			void assign(InputIt first, InputIt last)
 			{
-				// TODO
+				// TOCHECK ~Need to check if it's enough
+				InputIt tmp = first;
+				int	i = 0;
+				int	j = 0;
+				if (this->_capacity > 0)
+					this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_capacity = 0;
+				while (tmp != last)
+				{
+					i++;
+					tmp++;
+				}
+				this->_arr = this->_alloc.allocate(i);
+				while (j != i)
+				{
+					this->_arr[this->_capacity] = *first;
+					this->_capacity++;
+					first++;
+					j++;
+				}
+				this->_size = this->_capacity;
 			}
 
 			// Get_allocator
@@ -123,7 +206,7 @@ namespace	ft
 
 			reference	&operator[](size_type pos) { return (this->_arr[pos]); }
 
-			const_reference	&operator[](size_type pos) const;
+			const_reference	&operator[](size_type pos) const { return (this->_arr[pos]); }
 
 			reference	front()
 			{
@@ -222,13 +305,19 @@ namespace	ft
 				return (false);
 			}
 
-			size_type	size() const { return (this->size); }
+			size_type	size() const { return (this->_size); }
 
 			size_type	max_size() const { return (this->_alloc.max_size()); }
 
 			void	reserve(size_type new_cap)
 			{
-				// TODO
+				// TOCHECK
+				// TODO self-made exceptions
+				if (new_cap > max_size())
+					throw std::length_error("Length error");
+				if (new_cap < this->_capacity)
+					return	;
+				this->realloc(new_cap);
 			}
 
 			size_type	capacity() const { return (this->_capacity); }
@@ -236,9 +325,15 @@ namespace	ft
 			// Modifiers
 			void		clear()
 			{
-				// TODO
-			}
+				// TOFIX not working like the std version
 
+				for (int i = 0; i < this->_size; i++)
+					this->_alloc.destroy(&this->_arr[i]);
+					// this->_arr[i].~T();
+				this->_size = 0;
+				// this->_alloc.deallocate(this->_arr, this->_capacity);
+				// this->_arr = this->_alloc.allocate(0);
+			}
 			iterator	insert(const_iterator pos, const T &value)
 			{
 				// TODO
@@ -267,7 +362,11 @@ namespace	ft
 
 			void		push_back(const T& value)
 			{
-				// TODO
+				// TOCHECK
+				if (this->_size + 1 >= this->_capacity)
+					this->realloc(this->_capacity + 1);
+				this->_size++;
+				this->_arr[this->_size - 1] = value;
 			}
 
 			void		pop_back()
