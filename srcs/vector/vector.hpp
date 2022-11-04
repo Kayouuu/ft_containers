@@ -5,7 +5,7 @@
 #include <stdexcept>
 
 #include <memory>
-// #include "iterator.hpp"
+#include "../iterators.hpp"
 
 namespace	ft
 {
@@ -66,10 +66,10 @@ namespace	ft
 
 		public:
 			//Iterators
-			typedef ft::vector<T, Allocator>::RandomAccessIterator				iterator;
-			typedef	const ft::vector<T, Allocator>::RandomAccessIterator		const_iterator;
-			typedef ft::vector<T, Allocator>::ReverseRandomAccessIterator		reverse_iterator;
-			typedef ft::vector<T, Allocator>::ConstReverseRandomAccessIterator	const_reverse_iterator;
+			typedef ft::vector<T, Allocator>::RandomAccessIterator			iterator;
+			typedef	const ft::vector<T, Allocator>::RandomAccessIterator	const_iterator;
+			typedef ft::reverse_iterator<iterator>							reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
 		private:
 
 			// Member types
@@ -108,8 +108,7 @@ namespace	ft
 
 			vector(vector const &copy)
 			{
-				if (*this != copy)
-					*this = copy;
+				*this = copy;
 			}
 
 			vector	&operator=(vector const &copy)
@@ -124,7 +123,7 @@ namespace	ft
 				{
 					while (i < this->_capacity)
 					{
-						this->_arr[i] = this->copy._arr[i];
+						this->_arr[i] = copy._arr[i];
 						i++;
 					}
 				}
@@ -333,14 +332,10 @@ namespace	ft
 			// Modifiers
 			void		clear()
 			{
-				// TOFIX not working like the std version
-
+				// TOFIX not working like the std version (accessing vector[0] after calling clear should SEGFAULT)
 				for (int i = 0; i < this->_size; i++)
 					this->_alloc.destroy(&this->_arr[i]);
-					// this->_arr[i].~T();
 				this->_size = 0;
-				// this->_alloc.deallocate(this->_arr, this->_capacity);
-				// this->_arr = this->_alloc.allocate(0);
 			}
 			iterator	insert(const_iterator pos, const T &value)
 			{
@@ -387,51 +382,113 @@ namespace	ft
 
 			void		resize(size_type count, T value = T())
 			{
-				// TODO
+				// TOCHECK
+				if (count > this->max_size())
+					throw std::length_error("Length error");
+				if (this->_size > count)
+				{
+					this->realloc(count);
+					this->_size = count;
+				}
+				else if (this->_size < count)
+				{
+					this->realloc(count);
+					while (this->_size != count)
+					{
+						this->_arr[this->_size] = value;
+						this->_size++;
+					}
+				}
 			}
 
 			void		swap(vector &other)
 			{
-				// TODO
+				// TOCHECK
+				vector<T, Allocator>	tmp(other);
+
+				other = *this;
+				*this = tmp;
 			}
 
 			// Friend functions
 
-			friend void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+			friend void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs);
 
-			friend bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// TOCHECK when operator overloading are done if necessary or not
+			// friend bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			friend bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// friend bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			friend bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// friend bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			friend bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// friend bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			friend bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// friend bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			friend bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+			// friend bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 	};
 
 	// TODO swap must be used like this : ft::swap()
 	template<class T, class Allocator>
-	void swap(std::vector<T, Allocator>& lhs, std::vector<T, Allocator>& rhs);
+	void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs)
+	{
+		// TOCHECK
+		vector<T, Allocator>	tmp(lhs);
+
+		lhs = rhs;
+		rhs = tmp;
+	}
 
 	template< class T, class Allocator>
-	bool operator==(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TOFIX Doesn't enter in the while loop
+		if (lhs.size() != rhs.size())
+			return (false);
+		int i = 0;
+		typename ft::vector<T, Allocator>::iterator	begin_l = lhs.begin();
+		typename ft::vector<T, Allocator>::iterator	begin_r = rhs.begin();
+		typename ft::vector<T, Allocator>::iterator	end = lhs.end();
+		std::cout << *begin_l << " " << *end << std::endl;
+		while (begin_l != end)
+		{
+			if (*begin_l != *begin_r)
+				return (false);
+			begin_r++;
+			begin_l++;
+		}
+		return (true);
+	}
 
 	template< class T, class Allocator>
-	bool operator!=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TODO
+	}
 
 	template< class T, class Allocator>
-	bool operator<(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
-
+	bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TODO
+	}
+	
 	template< class T, class Allocator>
-	bool operator<=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
-
+	bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TODO
+	}
+	
 	template< class T, class Allocator>
-	bool operator>(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
-
+	bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TODO
+	}
+	
 	template< class T, class Allocator>
-	bool operator>=(const std::vector<T, Allocator>& lhs, const std::vector<T, Allocator>& rhs);
+	bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
+	{
+		// TODO
+	}
+	
 }
 #endif

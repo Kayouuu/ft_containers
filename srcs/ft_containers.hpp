@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/02 09:47:20 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/03 16:09:14 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 // #include "stack/stack.hpp"
 #include "vector/vector.hpp"
+#include "iterators.hpp"
 
 namespace	ft
 {
@@ -25,32 +26,6 @@ namespace	ft
 	// TODO
 	template< class T, class Allocator >
 	class vector;
-
-    template <class T>
-    struct iterator_traits
-	{
-        typedef typename T::value_type            value_type;
-        typedef typename T::difference_type       difference_type;
-        typedef typename T::iterator_category     iterator_category;
-        typedef typename T::pointer               pointer;
-        typedef typename T::reference             reference;
-    };
-
-	// TOFIX
-    template <class T>
-    struct iterator_traits<T*>
-	{
-        typedef T                          value_type;
-        typedef ptrdiff_t                  difference_type;
-        // typedef random_access_iterator_tag iterator_category;
-        typedef T*                         pointer;
-        typedef T&                         reference;
-    };
-	// template< class T >
-	// struct iterator_traits<const T*>;
-
-	// template< class Iter >
-	// class reverse_iterator;
 
 	// template< bool B, class T = void >
 	// struct enable_if;
