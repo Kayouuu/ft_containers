@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/03 16:09:14 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/07 15:54:16 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 // #include "stack/stack.hpp"
 #include "vector/vector.hpp"
 #include "iterators.hpp"
+#include "is_integral.hpp"
 
 namespace	ft
 {
@@ -24,14 +25,14 @@ namespace	ft
 	// class stack;
 	
 	// TODO
-	template< class T, class Allocator >
+	template<class T, class Allocator>
 	class vector;
 
-	// template< bool B, class T = void >
-	// struct enable_if;
+	template<bool B, class T = void>
+	struct enable_if { };
 
-	// template< class T >
-	// struct is_integral;
+	template<class T>
+	struct enable_if<true, T> { typedef T type; };
 
 	// // equal and/or lexicographical_compare
 

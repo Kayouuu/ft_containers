@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "../iterators.hpp"
+#include "../ft_containers.hpp"
 
 namespace	ft
 {
@@ -15,72 +16,23 @@ namespace	ft
 	>
 	class vector
 	{
-	
-		// Iterator
-		class	RandomAccessIterator
-		{
-			public:
-				// TODO Use ft::iterator_traits ?
-				typedef T		value_type;
-				typedef	T*		pointer;
-				typedef	T&		reference;
-				// TOFIX Use self-made types
-				typedef std::ptrdiff_t	difference_type;
-				typedef	std::random_access_iterator_tag	iterator_category;
-				
-				// Constructors
-				RandomAccessIterator() { };
-				RandomAccessIterator(pointer ptr) : _ptr(ptr) { };
-				RandomAccessIterator(RandomAccessIterator const &copy) { *this = copy; };
-				RandomAccessIterator	&operator=(RandomAccessIterator const &copy)
-				{
-					_ptr = copy._ptr;
-					return (*this);
-				};
-				// Destructor
-				~RandomAccessIterator() { };
-
-				// Operator overload
-				reference	operator*() const { return (*_ptr); }
-				pointer		operator->() { return (_ptr); }
-				RandomAccessIterator	&operator++() { _ptr++; return (*this); }
-				RandomAccessIterator	operator++(int) { RandomAccessIterator tmp = *this; ++(*this); return (tmp); }
-				RandomAccessIterator	&operator--() { _ptr--; return (*this); }
-				RandomAccessIterator	operator--(int) { RandomAccessIterator tmp = *this; --(*this); return (tmp); }
-				RandomAccessIterator	&operator+=(RandomAccessIterator const &rhs) { this->_ptr += rhs._ptr; return (*this); }
-				RandomAccessIterator	&operator-=(RandomAccessIterator const &rhs) { this->_ptr -= rhs._ptr; return (*this); }
-				RandomAccessIterator	&operator[](size_t pos) { return (this->_ptr[pos]); }
-				friend bool	operator==(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
-				friend bool	operator!=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr == b._ptr); }
-				friend bool	operator>(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr > b._ptr); }
-				friend bool	operator<(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr < b._ptr); }
-				friend bool	operator>=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr >= b._ptr); }
-				friend bool	operator<=(RandomAccessIterator const &a, RandomAccessIterator const &b) { return (a._ptr <= b._ptr); }
-				friend	RandomAccessIterator	operator+(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs) { lhs += rhs; return (lhs); }
-				friend	RandomAccessIterator	operator-(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs) { lhs += rhs; return (lhs); }
-			private:
-				pointer	_ptr;
-		};
-		class	ReverseRandomAccessIterator;
-		class	ConstReverseRandomAccessIterator;
-
 		public:
-			//Iterators
-			typedef ft::vector<T, Allocator>::RandomAccessIterator			iterator;
-			typedef	const ft::vector<T, Allocator>::RandomAccessIterator	const_iterator;
-			typedef ft::reverse_iterator<iterator>							reverse_iterator;
-			typedef ft::reverse_iterator<const_iterator>					const_reverse_iterator;
-		private:
-
+			// Iterators
+			typedef ft::RandomAccessIterator<T>					iterator;
+			typedef	ft::RandomAccessIterator<T>					const_iterator;
+			typedef ft::reverse_iterator<iterator>			reverse_iterator;
+			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			// Member types
 			typedef T									value_type;
 			typedef	Allocator							allocator_type;
 			typedef	size_t								size_type;
-			typedef	ptrdiff_t							difference_type; // TOCHECK
+			typedef	long int							difference_type; // TOCHECK
 			typedef	value_type&							reference;
 			typedef	const value_type&					const_reference;
 			typedef	typename Allocator::pointer			pointer;
 			typedef	typename Allocator::const_pointer	const_pointer;
+		private:
+
 
 			Allocator	_alloc;
 			T			*_arr;
@@ -134,17 +86,42 @@ namespace	ft
 			{
 				// TOCHECK ~Need to check if it's enough
 				this->_alloc = alloc;
+				this->_size = 0;
+				this->_capacity = 0;
 			}
 
 			explicit vector(size_type count, const T& value = T(), const allocator_type& alloc = Allocator())
 			{
-				// TODO
+				// TOCHECK
+				this->_alloc = alloc;
+				this->_size = count;
+				this->_capacity = count;
+				this->assign(count, value);
 			}
 
 			template<class InputIt>
-			vector(InputIt first, InputIt last, const allocator_type& alloc = Allocator())
+			vector(InputIt first, InputIt last, const allocator_type& alloc = Allocator(), typename ft::enable_if< !ft::is_integral< InputIt >::value >::type* = 0 )
 			{
-				// TODO
+				// TOCHECK
+				InputIt	copy = first;
+				int		i = 0;
+
+				while (copy != last)
+				{
+					i++;
+					++copy;
+				}
+				this->_alloc = alloc;
+				this->_size = i;
+				this->_capacity = i;
+				this->_arr = this->_alloc.allocate(i);
+				i = 0;
+				while (first != last)
+				{
+					this->_arr[i] = T(*first);
+					++first;
+					i++;
+				}
 			}
 
 			// Destructor
@@ -169,7 +146,7 @@ namespace	ft
 			}
 
 			template<class InputIt>
-			void assign(InputIt first, InputIt last)
+			void assign(InputIt first, InputIt last, typename ft::enable_if< !ft::is_integral< InputIt >::value >::type* = 0 )
 			{
 				// TOCHECK ~Need to check if it's enough
 				InputIt tmp = first;
@@ -186,7 +163,7 @@ namespace	ft
 				this->_arr = this->_alloc.allocate(i);
 				while (j != i)
 				{
-					this->_arr[this->_capacity] = *first;
+					this->_arr[this->_capacity] = T(*first);
 					this->_capacity++;
 					first++;
 					j++;
@@ -286,22 +263,24 @@ namespace	ft
 
 			reverse_iterator	rbegin()
 			{
-				// TODO
+				return (ft::reverse_iterator<iterator>(this->end()));
 			}
 
 			const_reverse_iterator	rbegin() const
 			{
-				// TODO
+				// TOCHECK
+				return(const_reverse_iterator(this->end()));
 			}
 
 			reverse_iterator	rend()
 			{
-				// TODO
+				return (ft::reverse_iterator<iterator>(this->begin()));
 			}
 
 			const_reverse_iterator	rend() const
 			{
-				// TODO
+				// TOCHECK
+				return(const_reverse_iterator(this->begin()));
 			}
 
 			// Capacity
@@ -319,7 +298,6 @@ namespace	ft
 			void	reserve(size_type new_cap)
 			{
 				// TOCHECK
-				// TODO self-made exceptions
 				if (new_cap > max_size())
 					throw std::length_error("Length error");
 				if (new_cap < this->_capacity)
@@ -332,7 +310,7 @@ namespace	ft
 			// Modifiers
 			void		clear()
 			{
-				// TOFIX not working like the std version (accessing vector[0] after calling clear should SEGFAULT)
+				// TOFIX not working like the std version (accessing vector[0] after calling clear should SEGFAULT) (possibly normal)
 				for (int i = 0; i < this->_size; i++)
 					this->_alloc.destroy(&this->_arr[i]);
 				this->_size = 0;
@@ -491,4 +469,5 @@ namespace	ft
 	}
 	
 }
+
 #endif
