@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/07 15:54:16 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/09 10:20:25 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include "vector/vector.hpp"
 #include "iterators.hpp"
 #include "is_integral.hpp"
+#include "comparison.hpp"
 
 namespace	ft
 {
@@ -33,8 +34,6 @@ namespace	ft
 
 	template<class T>
 	struct enable_if<true, T> { typedef T type; };
-
-	// // equal and/or lexicographical_compare
 
 	// template<class T1, class T2>
 	// struct pair;

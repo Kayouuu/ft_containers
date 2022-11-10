@@ -18,8 +18,8 @@ namespace	ft
 	{
 		public:
 			// Iterators
-			typedef ft::RandomAccessIterator<T>					iterator;
-			typedef	ft::RandomAccessIterator<T>					const_iterator;
+			typedef ft::RandomAccessIterator<T*, vector>			iterator;
+			typedef	ft::RandomAccessIterator<const T*, vector>		const_iterator;
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			// Member types
@@ -146,7 +146,7 @@ namespace	ft
 			}
 
 			template<class InputIt>
-			void assign(InputIt first, InputIt last, typename ft::enable_if< !ft::is_integral< InputIt >::value >::type* = 0 )
+			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
 				// TOCHECK ~Need to check if it's enough
 				InputIt tmp = first;
@@ -258,6 +258,7 @@ namespace	ft
 
 			const_iterator	end() const
 			{
+				// TOFIX Use the other when using a const iterator
 				return (const_iterator(&this->_arr[this->_size]));
 			}
 
@@ -393,11 +394,11 @@ namespace	ft
 			friend void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs);
 
 			// TOCHECK when operator overloading are done if necessary or not
-			// friend bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
+			friend bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 			// friend bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
-			// friend bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
+			friend bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
 			// friend bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 
@@ -420,53 +421,23 @@ namespace	ft
 	template< class T, class Allocator>
 	bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		// TOFIX Doesn't enter in the while loop
 		if (lhs.size() != rhs.size())
 			return (false);
-		int i = 0;
-		typename ft::vector<T, Allocator>::iterator	begin_l = lhs.begin();
-		typename ft::vector<T, Allocator>::iterator	begin_r = rhs.begin();
-		typename ft::vector<T, Allocator>::iterator	end = lhs.end();
-		std::cout << *begin_l << " " << *end << std::endl;
-		while (begin_l != end)
-		{
-			if (*begin_l != *begin_r)
-				return (false);
-			begin_r++;
-			begin_l++;
-		}
-		return (true);
+		return (ft::equal(lhs.begin(), lhs.end(), rhs.end()));
 	}
-
-	template< class T, class Allocator>
-	bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		// TODO
-	}
-
 	template< class T, class Allocator>
 	bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
 	{
-		// TODO
+		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
 	}
-	
 	template< class T, class Allocator>
-	bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		// TODO
-	}
-	
+	bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs == rhs)); }
 	template< class T, class Allocator>
-	bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		// TODO
-	}
-	
+	bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs < rhs)); }
 	template< class T, class Allocator>
-	bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		// TODO
-	}
+	bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (rhs < lhs); }
+	template< class T, class Allocator>
+	bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs < rhs)); }
 	
 }
 
