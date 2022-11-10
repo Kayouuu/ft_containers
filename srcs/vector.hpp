@@ -5,8 +5,8 @@
 #include <stdexcept>
 
 #include <memory>
-#include "../iterators.hpp"
-#include "../ft_containers.hpp"
+#include "iterators.hpp"
+#include "ft_containers.hpp"
 
 namespace	ft
 {
@@ -58,14 +58,10 @@ namespace	ft
 				this->_capacity = 0;
 			}
 
-			vector(vector const &copy)
-			{
-				*this = copy;
-			}
+			vector(vector const &copy) { *this = copy; }
 
 			vector	&operator=(vector const &copy)
 			{
-				// TOCHECK
 				int	i = 0;
 				this->_alloc = copy._alloc;
 				this->_size = copy._size;
@@ -92,7 +88,6 @@ namespace	ft
 
 			explicit vector(size_type count, const T& value = T(), const allocator_type& alloc = Allocator())
 			{
-				// TOCHECK
 				this->_alloc = alloc;
 				this->_size = count;
 				this->_capacity = count;
@@ -136,7 +131,6 @@ namespace	ft
 			// Assign
 			void assign(size_type count, const T& value)
 			{
-				// TOCHECK ~Need to check if it's enough
 				if (this->_capacity > 0)
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_arr = this->_alloc.allocate(count);
@@ -149,7 +143,6 @@ namespace	ft
 			template<class InputIt>
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				// TOCHECK ~Need to check if it's enough
 				InputIt tmp = first;
 				int	i = 0;
 				int	j = 0;
@@ -175,14 +168,12 @@ namespace	ft
 			// Get_allocator
 			allocator_type get_allocator() const
 			{
-				// TOCHECK Need to check if it's correct
 				return (this->_alloc);
 			}
 
 			// Element access
 			reference	at(size_type pos)
 			{
-				// TOFIX Use self-made out_of_range exception with right msg
 				if (!(pos < this->_size))
 					throw	std::out_of_range("out of range");
 				return (this->_arr[pos]);
@@ -190,43 +181,21 @@ namespace	ft
 
 			const_reference	at(size_type pos) const
 			{
-				// TOFIX Use self-made out_of_range exception with right msg
 				if (!(pos < this->_size))
 					throw	std::out_of_range("out of range");
 				return (this->_arr[pos]);
 			}
 
 			reference	&operator[](size_type pos) { return (this->_arr[pos]); }
-
 			const_reference	&operator[](size_type pos) const { return (this->_arr[pos]); }
 
-			reference	front()
-			{
-				// TOCHECK
-				return (this->_arr[0]);
-			}
-
-			const_reference	front() const
-			{
-				// TOCHECK
-				return (this->_arr[0]);
-			}
-
-			reference	back()
-			{
-				// TOCHECK
-				return (this->_arr[this->_size - 1]);
-			}
-
-			const_reference	back() const
-			{
-				// TOCHECK
-				return (this->_arr[this->_size - 1]);
-			}
+			reference	front() { return (this->_arr[0]); }
+			const_reference	front() const { return (this->_arr[0]); }
+			reference	back() { return (this->_arr[this->_size - 1]); }
+			const_reference	back() const { return (this->_arr[this->_size - 1]); }
 
 			T	*data()
 			{
-				// TOCHECK
 				if (this->_size == 0)
 					return (NULL);
 				return (this->_arr);
@@ -234,34 +203,16 @@ namespace	ft
 
 			const T	*data() const
 			{
-				// TOCHECK
 				if (this->_size == 0)
 					return (NULL);
 				return (this->_arr);
 			}
 
 			// Iterators
-			iterator		begin()
-			{
-				return (iterator(&this->_arr[0]));
-			}
-
-			const_iterator	begin() const
-			{
-				// TOFIX It use the other function when using a const iterator
-				return (const_iterator(&this->_arr[0]));
-			}
-
-			iterator	end()
-			{
-				return (iterator(&this->_arr[this->_size]));
-			}
-
-			const_iterator	end() const
-			{
-				// TOFIX It use the other function when using a const iterator
-				return (const_iterator(&this->_arr[this->_size]));
-			}
+			iterator		begin() { return (iterator(&this->_arr[0])); }
+			const_iterator	begin() const { return (const_iterator(&this->_arr[0])); }
+			iterator		end() { return (iterator(&this->_arr[this->_size])); }
+			const_iterator	end() const { return (const_iterator(&this->_arr[this->_size])); }
 
 			reverse_iterator	rbegin()
 			{
@@ -299,7 +250,6 @@ namespace	ft
 
 			void	reserve(size_type new_cap)
 			{
-				// TOCHECK
 				if (new_cap > max_size())
 					throw std::length_error("Length error");
 				if (new_cap < this->_capacity)
@@ -312,7 +262,6 @@ namespace	ft
 			// Modifiers
 			void		clear()
 			{
-				// TOFIX not working like the std version (accessing vector[0] after calling clear should SEGFAULT) (possibly normal)
 				for (int i = 0; i < this->_size; i++)
 					this->_alloc.destroy(&this->_arr[i]);
 				this->_size = 0;
@@ -320,6 +269,9 @@ namespace	ft
 
 			iterator	insert(const_iterator pos, const T &value)
 			{
+				// TOCHECK return value
+				vector<T, Allocator>::iterator it = this->begin();
+				vector<T, Allocator>::iterator right_it;
 				int	new_capacity = this->_capacity + 1;
 				int i = 0;
 
@@ -333,8 +285,6 @@ namespace	ft
 				
 				T	*new_arr = this->_alloc.allocate(new_capacity);
 
-				vector<T, Allocator>::iterator it = this->begin();
-				vector<T, Allocator>::iterator right_it;
 				while (it != pos)
 				{
 					right_it = it;
@@ -359,11 +309,48 @@ namespace	ft
 
 			iterator	insert(const_iterator pos, size_type count, const T& value)
 			{
-				// TODO
+				vector<T, Allocator>::iterator it = this->begin();
+				vector<T, Allocator>::iterator right_it;
+				int	new_capacity = this->_capacity + count;
+				int i = 0;
+
+				if (pos == this->end())
+				{
+					this->push_back(value);
+					return (this->begin());
+				}
+				if (this->_capacity + count <= this->_capacity * 2)
+					new_capacity = this->_capacity * 2;
+				
+				T	*new_arr = this->_alloc.allocate(new_capacity);
+
+				while (it != pos)
+				{
+					right_it = it;
+					new_arr[i] = *it;
+					i++;
+					++it;
+				}
+				for (int j = 0; j < count; j++)
+				{
+					new_arr[i] = value;
+					i++;
+				}
+				while (it != this->end())
+				{
+					new_arr[i] = *it;
+					++it;
+					i++;
+				}
+				this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_arr = new_arr;
+				this->_size += count;
+				this->_capacity = new_capacity;
+				return (right_it);
 			}
 
 			template<class InputIt>
-			iterator	insert(const_iterator pos, InputIt first, InputIt last)
+			iterator	insert(const_iterator pos, InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
 				// TODO
 			}
@@ -380,7 +367,6 @@ namespace	ft
 
 			void		push_back(const T& value)
 			{
-				// TOCHECK
 				if (this->_size + 1 >= this->_capacity)
 					this->realloc(this->_capacity + 1);
 				this->_alloc.construct(this->_arr + this->_size, value);
@@ -389,7 +375,6 @@ namespace	ft
 
 			void		pop_back()
 			{
-				// TOCHECK
 				this->_alloc.destroy(this->_arr + this->_size);
 				if (this->_size > 1)
 					this->_size--;
@@ -427,23 +412,11 @@ namespace	ft
 
 			// Friend functions
 
-			friend void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs);
-
-			// TOCHECK when operator overloading are done if necessary or not
+			friend void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs); // TOFIX potentially useless
 			friend bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-
-			// friend bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-
 			friend bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-
-			// friend bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-
-			// friend bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-
-			// friend bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
 	};
 
-	// TODO swap must be used like this : ft::swap()
 	template<class T, class Allocator>
 	void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs)
 	{

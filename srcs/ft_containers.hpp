@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/09 10:20:25 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/10 15:43:14 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 # define FT_CONTAINERS_HPP
 
 // #include "stack/stack.hpp"
-#include "vector/vector.hpp"
+#include "vector.hpp"
 #include "iterators.hpp"
 #include "is_integral.hpp"
 #include "comparison.hpp"
