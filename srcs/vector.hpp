@@ -310,13 +310,14 @@ namespace	ft
 			iterator	insert(const_iterator pos, size_type count, const T& value)
 			{
 				vector<T, Allocator>::iterator it = this->begin();
-				vector<T, Allocator>::iterator right_it;
+				int	right_pos;
 				int	new_capacity = this->_capacity + count;
 				int i = 0;
 
 				if (pos == this->end())
 				{
-					this->push_back(value);
+					for (int j = 0; j < count; j++)
+						this->push_back(value);
 					return (this->begin());
 				}
 				if (this->_capacity + count <= this->_capacity * 2)
@@ -326,11 +327,11 @@ namespace	ft
 
 				while (it != pos)
 				{
-					right_it = it;
 					new_arr[i] = *it;
 					i++;
 					++it;
 				}
+				right_pos = i;
 				for (int j = 0; j < count; j++)
 				{
 					new_arr[i] = value;
@@ -346,18 +347,79 @@ namespace	ft
 				this->_arr = new_arr;
 				this->_size += count;
 				this->_capacity = new_capacity;
-				return (right_it);
+				return (vector<T, Allocator>::iterator(&new_arr[right_pos]));
 			}
 
 			template<class InputIt>
 			iterator	insert(const_iterator pos, InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				// TODO
+				InputIt		it = this->begin();
+				InputIt		copy = first;
+				int			right_pos;
+				int			new_capacity = this->_capacity;
+				int			new_size = 0;
+
+				while (copy != last)
+				{
+					new_capacity++;
+					copy++;
+				}
+				int i = 0;
+				if (new_capacity <= this->_capacity * 2)
+					new_capacity = this->_capacity * 2;
+				
+				T	*new_arr = this->_alloc.allocate(new_capacity);
+
+				while (it != pos)
+				{
+					new_arr[i] = *it;
+					i++;
+					it++;
+				}
+				right_pos = i;
+				while (first != last)
+				{
+					new_arr[i] = *first;
+					first++;
+					i++;
+					new_size++;
+				}
+				while (it != this->end())
+				{
+					new_arr[i] = *it;
+					++it;
+					i++;
+				}
+				this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_arr = new_arr;
+				this->_size += new_size;
+				this->_capacity = new_capacity;
+				return (InputIt(&new_arr[right_pos]));
 			}
 
 			iterator	erase(iterator pos)
 			{
-				// TODO
+				// TOCHECK
+				iterator	it = this->begin();
+				iterator	returned = this->begin();
+				int			i = 0;
+
+				while (it != pos)
+				{
+					it++;
+					returned++;
+					i++;
+				}
+				it++;
+				this->_alloc.destroy(&*pos);
+				while (it != this->end())
+				{
+					this->_arr[i] = this->_arr[i + 1];
+					i++;
+					it++;
+				}
+				this->_size--;
+				return (returned);
 			}
 
 			iterator	erase(iterator first, iterator last)
