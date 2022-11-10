@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/09 15:23:26 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/10 15:16:27 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,14 +116,14 @@ namespace ft
 	class	RandomAccessIterator
 	{
 		public:
-			typedef typename ft::iterator_traits<T>::value_type			value_type;
-			typedef	typename ft::iterator_traits<T>::pointer			pointer;
-			typedef	typename ft::iterator_traits<T>::reference			reference;
-			typedef typename ft::iterator_traits<T>::difference_type	difference_type;
+			typedef typename ft::iterator_traits<T*>::value_type			value_type;
+			typedef	typename ft::iterator_traits<T*>::pointer			pointer;
+			typedef	typename ft::iterator_traits<T*>::reference			reference;
+			typedef typename ft::iterator_traits<T*>::difference_type	difference_type;
 			typedef	typename std::random_access_iterator_tag			iterator_category;
 
 			// Constructors
-			RandomAccessIterator() { }; // TOCHECK
+			RandomAccessIterator() : _ptr(NULL) { }; // TOCHECK
 			RandomAccessIterator(pointer ptr) : _ptr(ptr) { };
 			RandomAccessIterator(RandomAccessIterator const &copy) { *this = copy; };
 			RandomAccessIterator	&operator=(RandomAccessIterator const &copy)
@@ -131,6 +131,7 @@ namespace ft
 				_ptr = copy._ptr;
 				return (*this);
 			};
+			operator RandomAccessIterator<const T, Cont> () const { return (RandomAccessIterator<const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
 			// Destructor
 			~RandomAccessIterator() { };
 

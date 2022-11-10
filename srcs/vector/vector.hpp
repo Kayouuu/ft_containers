@@ -18,8 +18,8 @@ namespace	ft
 	{
 		public:
 			// Iterators
-			typedef ft::RandomAccessIterator<T*, vector>			iterator;
-			typedef	ft::RandomAccessIterator<const T*, vector>		const_iterator;
+			typedef ft::RandomAccessIterator<T, vector>				iterator;
+			typedef	ft::RandomAccessIterator<const T, vector>		const_iterator;
 			typedef ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 			// Member types
@@ -84,7 +84,7 @@ namespace	ft
 
 			explicit vector(const allocator_type& alloc)
 			{
-				// TOCHECK ~Need to check if it's enough
+				// TOCHECK ~Need to check if it's enough / Possibly need to allocate a capacity
 				this->_alloc = alloc;
 				this->_size = 0;
 				this->_capacity = 0;
@@ -128,6 +128,7 @@ namespace	ft
 			~vector()
 			{
 				// TOCHECK ~Need to check if it's enough
+				// this->clear() ?
 				if (this->_capacity > 0)
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 			}
@@ -247,7 +248,7 @@ namespace	ft
 
 			const_iterator	begin() const
 			{
-				// TOCHECK
+				// TOFIX It use the other function when using a const iterator
 				return (const_iterator(&this->_arr[0]));
 			}
 
@@ -258,7 +259,7 @@ namespace	ft
 
 			const_iterator	end() const
 			{
-				// TOFIX Use the other when using a const iterator
+				// TOFIX It use the other function when using a const iterator
 				return (const_iterator(&this->_arr[this->_size]));
 			}
 
@@ -316,9 +317,44 @@ namespace	ft
 					this->_alloc.destroy(&this->_arr[i]);
 				this->_size = 0;
 			}
+
 			iterator	insert(const_iterator pos, const T &value)
 			{
-				// TODO
+				int	new_capacity = this->_capacity + 1;
+				int i = 0;
+
+				if (pos == this->end())
+				{
+					this->push_back(value);
+					return (this->begin());
+				}
+				if (this->_capacity + 1 <= this->_capacity * 2)
+					new_capacity = this->_capacity * 2;
+				
+				T	*new_arr = this->_alloc.allocate(new_capacity);
+
+				vector<T, Allocator>::iterator it = this->begin();
+				vector<T, Allocator>::iterator right_it;
+				while (it != pos)
+				{
+					right_it = it;
+					new_arr[i] = *it;
+					i++;
+					++it;
+				}
+				new_arr[i] = value;
+				i++;
+				while (it != this->end())
+				{
+					new_arr[i] = *it;
+					++it;
+					i++;
+				}
+				this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_arr = new_arr;
+				this->_size += 1;
+				this->_capacity = new_capacity;
+				return (right_it);
 			}
 
 			iterator	insert(const_iterator pos, size_type count, const T& value)

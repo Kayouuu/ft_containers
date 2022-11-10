@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 10:44:24 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/09 14:23:02 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/10 15:24:33 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,17 +106,35 @@ T	dec(T it, int n)
 #include <list>
 int		main(void)
 {
-	ft::vector<int>	v;
+	{
+		std::vector<int>	v;
 
-	v.push_back(1);
-	v.push_back(2);
-	v.push_back(3);
-	v.push_back(4);
-	v.push_back(5);
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		std::cout << v.size() << " " << v.capacity() << std::endl;
+		std::vector<int>::iterator		vb = v.begin();
+		// ft::vector<int>::const_iterator	ve = v.end();
+		v.insert(vb, 15);
+		std::cout << v[0] << v[5] << std::endl;
+		std::cout << v.size() << std::endl;
+	}
+	std::cout << "----------------------" << std::endl;
+	{
+		ft::vector<int>	v;
 
-	ft::vector<int>::iterator		vb = v.begin();
-	ft::vector<int>::const_iterator	ve = v.end();
-
-	std::cout << (vb >= ve) << std::endl;
-	return (0);
+		v.push_back(1);
+		v.push_back(2);
+		v.push_back(3);
+		v.push_back(4);
+		v.push_back(5);
+		std::cout << v.size() << " " << v.capacity() << std::endl;
+		ft::vector<int>::iterator		vb = v.begin();
+		// ft::vector<int>::const_iterator	ve = v.end();
+		v.insert(vb, 15);
+		std::cout << v[0] << v[5] << std::endl;
+		std::cout << v.size() << std::endl;
+	}
 }
