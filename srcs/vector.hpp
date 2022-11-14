@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   vector.hpp                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
+/*   Updated: 2022/11/14 11:51:23 by psaulnie         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
@@ -26,7 +38,7 @@ namespace	ft
 			typedef T									value_type;
 			typedef	Allocator							allocator_type;
 			typedef	size_t								size_type;
-			typedef	long int							difference_type; // TOCHECK
+			typedef	long int							difference_type;
 			typedef	value_type&							reference;
 			typedef	const value_type&					const_reference;
 			typedef	typename Allocator::pointer			pointer;
@@ -44,7 +56,7 @@ namespace	ft
 				if (new_capacity <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				T	*new_arr = this->_alloc.allocate(new_capacity);
-				for (int i = 0; i < this->_capacity; i++)
+				for (size_t i = 0; i < this->_capacity; i++)
 					new_arr[i] = this->_arr[i];
 				this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_arr = new_arr;
@@ -62,7 +74,7 @@ namespace	ft
 
 			vector	&operator=(vector const &copy)
 			{
-				int	i = 0;
+				size_type	i = 0;
 				this->_alloc = copy._alloc;
 				this->_size = copy._size;
 				this->_capacity = copy._capacity;
@@ -136,7 +148,7 @@ namespace	ft
 				this->_arr = this->_alloc.allocate(count);
 				this->_size = count;
 				this->_capacity = count;
-				for (int i = 0; i < count; i++)
+				for (size_t i = 0; i < count; i++)
 					this->_arr[i] = value;
 			}
 
@@ -262,7 +274,7 @@ namespace	ft
 			// Modifiers
 			void		clear()
 			{
-				for (int i = 0; i < this->_size; i++)
+				for (size_type i = 0; i < this->_size; i++)
 					this->_alloc.destroy(&this->_arr[i]);
 				this->_size = 0;
 			}
@@ -316,7 +328,7 @@ namespace	ft
 
 				if (pos == this->end())
 				{
-					for (int j = 0; j < count; j++)
+					for (size_t j = 0; j < count; j++)
 						this->push_back(value);
 					return (this->begin());
 				}
@@ -332,7 +344,7 @@ namespace	ft
 					++it;
 				}
 				right_pos = i;
-				for (int j = 0; j < count; j++)
+				for (size_t j = 0; j < count; j++)
 				{
 					new_arr[i] = value;
 					i++;
@@ -353,8 +365,8 @@ namespace	ft
 			template<class InputIt>
 			iterator	insert(const_iterator pos, InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				InputIt		it = this->begin();
-				InputIt		copy = first;
+				iterator	it = this->begin();
+				InputIt	copy = first;
 				int			right_pos;
 				int			new_capacity = this->_capacity;
 				int			new_size = 0;
@@ -365,7 +377,7 @@ namespace	ft
 					copy++;
 				}
 				int i = 0;
-				if (new_capacity <= this->_capacity * 2)
+				if (new_capacity <= (int)this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				
 				T	*new_arr = this->_alloc.allocate(new_capacity);
@@ -394,7 +406,7 @@ namespace	ft
 				this->_arr = new_arr;
 				this->_size += new_size;
 				this->_capacity = new_capacity;
-				return (InputIt(&new_arr[right_pos]));
+				return (iterator(&new_arr[right_pos]));
 			}
 
 			iterator	erase(iterator pos)
@@ -424,7 +436,22 @@ namespace	ft
 
 			iterator	erase(iterator first, iterator last)
 			{
-				// TODO
+				// TOCHECK
+				iterator	returned = first;
+				bool		n = false;
+
+				if (first == last)
+					return (last);
+				if (last == this->end())
+					n = true;
+				while (first != last)
+				{
+					returned = this->erase(returned);
+					++first;
+				}
+				if (n)
+					return (this->end());
+				return (returned);
 			}
 
 			void		push_back(const T& value)
