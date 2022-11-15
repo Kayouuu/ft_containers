@@ -6,16 +6,14 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/14 11:51:23 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/15 13:51:44 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef VECTOR_HPP
 # define VECTOR_HPP
 
-// TOFIX Not needed at the end
 #include <stdexcept>
-
 #include <memory>
 #include "iterators.hpp"
 #include "ft_containers.hpp"
@@ -53,7 +51,9 @@ namespace	ft
 
 			void		realloc(size_type new_capacity)
 			{
-				if (new_capacity <= this->_capacity * 2)
+				if (_capacity == 0)
+					new_capacity = 1;
+				else if (new_capacity <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				T	*new_arr = this->_alloc.allocate(new_capacity);
 				for (size_t i = 0; i < this->_capacity; i++)
@@ -101,8 +101,8 @@ namespace	ft
 			explicit vector(size_type count, const T& value = T(), const allocator_type& alloc = Allocator())
 			{
 				this->_alloc = alloc;
-				this->_size = count;
-				this->_capacity = count;
+				this->_size = 0;
+				this->_capacity = 0;
 				this->assign(count, value);
 			}
 
@@ -149,7 +149,7 @@ namespace	ft
 				this->_size = count;
 				this->_capacity = count;
 				for (size_t i = 0; i < count; i++)
-					this->_arr[i] = value;
+					this->_alloc.construct(&this->_arr[i], value);
 			}
 
 			template<class InputIt>
@@ -281,16 +281,19 @@ namespace	ft
 
 			iterator	insert(const_iterator pos, const T &value)
 			{
-				// TOCHECK return value
 				vector<T, Allocator>::iterator it = this->begin();
 				vector<T, Allocator>::iterator right_it;
-				int	new_capacity = this->_capacity + 1;
-				int i = 0;
+				int		new_capacity;
+				int 	i = 0;
 
+				if (_size + 1 > _capacity)
+					new_capacity = _capacity + 1;
+				else
+					new_capacity = _capacity;
 				if (pos == this->end())
 				{
 					this->push_back(value);
-					return (this->begin());
+					return (this->end() - 1);
 				}
 				if (this->_capacity + 1 <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
@@ -299,12 +302,12 @@ namespace	ft
 
 				while (it != pos)
 				{
-					right_it = it;
 					new_arr[i] = *it;
 					i++;
 					++it;
 				}
 				new_arr[i] = value;
+				right_it = iterator(&new_arr[i]);
 				i++;
 				while (it != this->end())
 				{
@@ -323,9 +326,13 @@ namespace	ft
 			{
 				vector<T, Allocator>::iterator it = this->begin();
 				int	right_pos;
-				int	new_capacity = this->_capacity + count;
+				int	new_capacity;
 				int i = 0;
-
+				
+				if (_size + count > _capacity)
+					new_capacity = this->_capacity + count;
+				else
+					new_capacity = _capacity;
 				if (pos == this->end())
 				{
 					for (size_t j = 0; j < count; j++)
@@ -402,11 +409,12 @@ namespace	ft
 					++it;
 					i++;
 				}
-				this->_alloc.deallocate(this->_arr, this->_capacity);
+				if (this->_size != 0)
+					this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_arr = new_arr;
 				this->_size += new_size;
 				this->_capacity = new_capacity;
-				return (iterator(&new_arr[right_pos]));
+				return (iterator(&_arr[right_pos]));
 			}
 
 			iterator	erase(iterator pos)
@@ -456,7 +464,12 @@ namespace	ft
 
 			void		push_back(const T& value)
 			{
-				if (this->_size + 1 >= this->_capacity)
+				if (_capacity == 0)
+				{
+					_capacity = 1;
+					_arr = _alloc.allocate(1);
+				}
+				else if (this->_size + 1 >= this->_capacity)
 					this->realloc(this->_capacity + 1);
 				this->_alloc.construct(this->_arr + this->_size, value);
 				this->_size++;
@@ -464,8 +477,10 @@ namespace	ft
 
 			void		pop_back()
 			{
+				if (_size == 1)
+					_size--;
 				this->_alloc.destroy(this->_arr + this->_size);
-				if (this->_size > 1)
+				if (this->_size >= 1)
 					this->_size--;
 			}
 
@@ -492,50 +507,34 @@ namespace	ft
 
 			void		swap(vector &other)
 			{
-				// TOCHECK
-				vector<T, Allocator>	tmp(other);
-
-				other = *this;
-				*this = tmp;
+				std::swap(this->_arr, other._arr);
+				std::swap(this->_alloc, other._alloc);
+				std::swap(this->_size, other._size);
+				std::swap(this->_capacity, other._capacity);
 			}
 
 			// Friend functions
-
-			friend void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs); // TOFIX potentially useless
-			friend bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
-			friend bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs);
+			template< class U, class Alloc>
+			friend bool operator==(const vector<U, Alloc>& lhs, const vector<U, Alloc>& rhs);
+			template< class U, class Alloc>
+			friend bool operator<(const vector<U, Alloc>& lhs, const vector<U, Alloc>& rhs);
 	};
 
 	template<class T, class Allocator>
-	void swap(ft::vector<T, Allocator>& lhs, ft::vector<T, Allocator>& rhs)
-	{
-		// TOCHECK
-		vector<T, Allocator>	tmp(lhs);
-
-		lhs = rhs;
-		rhs = tmp;
-	}
+	void swap(vector<T, Allocator>& lhs, vector<T, Allocator>& rhs) { lhs.swap(rhs); };
 
 	template< class T, class Allocator>
-	bool operator==(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		if (lhs.size() != rhs.size())
-			return (false);
-		return (ft::equal(lhs.begin(), lhs.end(), rhs.end()));
-	}
+	bool operator==(vector<T, Allocator> const &lhs, vector<T, Allocator> const &rhs) { return (lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin())); };
 	template< class T, class Allocator>
-	bool operator<(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs)
-	{
-		return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end()));
-	}
+	bool operator<(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); };
 	template< class T, class Allocator>
-	bool operator!=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs == rhs)); }
+	bool operator!=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs == rhs)); };
 	template< class T, class Allocator>
-	bool operator<=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs < rhs)); }
+	bool operator<=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return ((lhs < rhs) || (lhs == rhs)); };
 	template< class T, class Allocator>
-	bool operator>(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (rhs < lhs); }
+	bool operator>(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (rhs < lhs); };
 	template< class T, class Allocator>
-	bool operator>=(const ft::vector<T, Allocator>& lhs, const ft::vector<T, Allocator>& rhs) { return (!(lhs < rhs)); }
+	bool operator>=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs < rhs) || (lhs == rhs)); };
 	
 }
 

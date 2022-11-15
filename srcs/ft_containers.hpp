@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/10 15:43:14 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/15 15:56:49 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ namespace	ft
 	// template<class T, class Container>
 	// class stack;
 	
-	// TODO
+	// TOFIX
 	template<class T, class Allocator>
 	class vector;
 
@@ -35,9 +35,11 @@ namespace	ft
 	template<class T>
 	struct enable_if<true, T> { typedef T type; };
 
+	// 	TODO
 	// template<class T1, class T2>
 	// struct pair;
 
+	//	TODO
 	// template< class T1, class T2 >
 	// std::pair<T1, T2> make_pair( T1 t, T2 u );
 }
