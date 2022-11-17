@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/17 15:39:25 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/17 17:36:39 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,17 +161,17 @@ namespace	ft
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
 				// TOFIX with ft::distance
-				InputIt tmp = first;
-				int	i = 0;
+				// InputIt tmp = first;
+				int	i = ft::distance(first, last);
 				int	j = 0;
 				if (this->_capacity > 0)
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_capacity = 0;
-				while (tmp != last)
-				{
-					i++;
-					tmp++;
-				}
+				// while (tmp != last)
+				// {
+				// 	i++;
+				// 	tmp++;
+				// }
 				this->_arr = this->_alloc.allocate(i);
 				while (j != i)
 				{
@@ -467,8 +467,8 @@ namespace	ft
 
 			void		pop_back()
 			{
-				this->_alloc.destroy(this->_arr + this->_size);
 				this->_size--;
+				this->_alloc.destroy(this->_arr + this->_size);
 			}
 
 			void		resize(size_type count, T value = T())

@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 10:44:24 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/17 15:20:06 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/17 15:45:31 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,14 +47,9 @@ struct TestStruct {
 
 int main()
 {
-	{
-		std::vector<TestStruct> v(10, TestStruct());
-		v.reserve(30);
-		std::cout << v.capacity() << " " << v.size() << " "<< v.empty();
-	}
-	{
-		ft::vector<TestStruct> v(10, TestStruct());
-		v.reserve(30);
-		std::cout << v.capacity() << " " << v.size() << " "<< v.empty();
-	}
+	ft::vector <int> v(10, 5);
+	ft::vector<int> vector(5, v[0] * 2);
+	vector.assign(v.begin() + v.size() / 4, v.end() - v.size() / 4);
+	for (int i = 0; i < vector.size(); i++)
+		std::cout << vector[i] << std::endl;
 }
