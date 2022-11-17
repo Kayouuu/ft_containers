@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 15:49:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/07 16:27:33 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/16 10:06:31 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,8 @@ namespace	ft
 	struct is_integral<int> : std::true_type {};
 	template <>
 	struct is_integral<long int> : std::true_type {};
-	template <>
-	struct is_integral<long long int> : std::true_type {};
+	// template <>
+	// struct is_integral<long long int> : std::true_type {};
 	template <>
 	struct is_integral<unsigned char> : std::true_type {};
 	template <>
@@ -48,8 +48,8 @@ namespace	ft
 	struct is_integral<unsigned int> : std::true_type {};
 	template <>
 	struct is_integral<unsigned long int> : std::true_type {};
-	template <>
-	struct is_integral<unsigned long long int> : std::true_type {};
+	// template <>
+	// struct is_integral<unsigned long long int> : std::true_type {};
 }
 
 #endif

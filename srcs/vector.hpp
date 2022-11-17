@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/15 13:51:44 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/17 15:39:25 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,14 +51,18 @@ namespace	ft
 
 			void		realloc(size_type new_capacity)
 			{
-				if (_capacity == 0)
-					new_capacity = 1;
-				else if (new_capacity <= this->_capacity * 2)
+				// if (new_capacity <)
+				// if (_capacity == 0 && new_capacity )
+				// 	new_capacity = 1;
+				if (new_capacity <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				T	*new_arr = this->_alloc.allocate(new_capacity);
-				for (size_t i = 0; i < this->_capacity; i++)
-					new_arr[i] = this->_arr[i];
-				this->_alloc.deallocate(this->_arr, this->_capacity);
+				if (this->_arr != NULL)
+				{
+					for (size_t i = 0; i < this->_capacity; i++)
+						new_arr[i] = this->_arr[i];
+					this->_alloc.deallocate(this->_arr, this->_capacity);
+				}
 				this->_arr = new_arr;
 				this->_capacity = new_capacity;
 			}
@@ -147,7 +151,8 @@ namespace	ft
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_arr = this->_alloc.allocate(count);
 				this->_size = count;
-				this->_capacity = count;
+				if (this->_capacity < this->_size)
+					this->_capacity = count;
 				for (size_t i = 0; i < count; i++)
 					this->_alloc.construct(&this->_arr[i], value);
 			}
@@ -155,6 +160,7 @@ namespace	ft
 			template<class InputIt>
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
+				// TOFIX with ft::distance
 				InputIt tmp = first;
 				int	i = 0;
 				int	j = 0;
@@ -221,43 +227,20 @@ namespace	ft
 			}
 
 			// Iterators
-			iterator		begin() { return (iterator(&this->_arr[0])); }
-			const_iterator	begin() const { return (const_iterator(&this->_arr[0])); }
-			iterator		end() { return (iterator(&this->_arr[this->_size])); }
-			const_iterator	end() const { return (const_iterator(&this->_arr[this->_size])); }
+			iterator		begin() { return (iterator(this->_arr)); }
+			const_iterator	begin() const { return (const_iterator(this->_arr)); }
+			iterator		end() { return (iterator(begin() + size())); }
+			const_iterator	end() const { return (const_iterator(begin() + size())); }
 
-			reverse_iterator	rbegin()
-			{
-				return (ft::reverse_iterator<iterator>(this->end()));
-			}
-
-			const_reverse_iterator	rbegin() const
-			{
-				// TOCHECK
-				return(const_reverse_iterator(this->end()));
-			}
-
-			reverse_iterator	rend()
-			{
-				return (ft::reverse_iterator<iterator>(this->begin()));
-			}
-
-			const_reverse_iterator	rend() const
-			{
-				// TOCHECK
-				return(const_reverse_iterator(this->begin()));
-			}
+			reverse_iterator	rbegin() { return (reverse_iterator(end())); }
+			const_reverse_iterator	rbegin() const { return(const_reverse_iterator(end())); }
+			reverse_iterator	rend() { return (reverse_iterator(begin())); }
+			const_reverse_iterator	rend() const { return(const_reverse_iterator(begin())); }
 
 			// Capacity
-			bool		empty() const
-			{
-				if (this->begin() == this->end())
-					return (true);
-				return (false);
-			}
-
+			bool		empty() const { return (this->begin() == this->end()); }
 			size_type	size() const { return (this->_size); }
-
+			size_type	capacity() const { return (this->_capacity); }
 			size_type	max_size() const { return (this->_alloc.max_size()); }
 
 			void	reserve(size_type new_cap)
@@ -266,10 +249,17 @@ namespace	ft
 					throw std::length_error("Length error");
 				if (new_cap < this->_capacity)
 					return	;
-				this->realloc(new_cap);
+				T	*new_arr = this->_alloc.allocate(new_cap);
+				if (this->_arr != NULL)
+				{
+					for (size_t i = 0; i < this->_capacity; i++)
+						new_arr[i] = this->_arr[i];
+					this->_alloc.deallocate(this->_arr, this->_capacity);
+				}
+				this->_arr = new_arr;
+				this->_capacity = new_cap;
 			}
 
-			size_type	capacity() const { return (this->_capacity); }
 
 			// Modifiers
 			void		clear()
@@ -295,7 +285,7 @@ namespace	ft
 					this->push_back(value);
 					return (this->end() - 1);
 				}
-				if (this->_capacity + 1 <= this->_capacity * 2)
+				if (this->_size == this->_capacity && this->_capacity + 1 <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				
 				T	*new_arr = this->_alloc.allocate(new_capacity);
@@ -339,7 +329,7 @@ namespace	ft
 						this->push_back(value);
 					return (this->begin());
 				}
-				if (this->_capacity + count <= this->_capacity * 2)
+				if (this->_size == this->_capacity && this->_capacity + count <= this->_capacity * 2)
 					new_capacity = this->_capacity * 2;
 				
 				T	*new_arr = this->_alloc.allocate(new_capacity);
@@ -469,7 +459,7 @@ namespace	ft
 					_capacity = 1;
 					_arr = _alloc.allocate(1);
 				}
-				else if (this->_size + 1 >= this->_capacity)
+				else if (this->_size == this->_capacity)
 					this->realloc(this->_capacity + 1);
 				this->_alloc.construct(this->_arr + this->_size, value);
 				this->_size++;
@@ -477,16 +467,12 @@ namespace	ft
 
 			void		pop_back()
 			{
-				if (_size == 1)
-					_size--;
 				this->_alloc.destroy(this->_arr + this->_size);
-				if (this->_size >= 1)
-					this->_size--;
+				this->_size--;
 			}
 
 			void		resize(size_type count, T value = T())
 			{
-				// TOCHECK
 				if (count > this->max_size())
 					throw std::length_error("Length error");
 				if (this->_size > count)
@@ -521,20 +507,20 @@ namespace	ft
 	};
 
 	template<class T, class Allocator>
-	void swap(vector<T, Allocator>& lhs, vector<T, Allocator>& rhs) { lhs.swap(rhs); };
+	void swap(vector<T, Allocator>& lhs, vector<T, Allocator>& rhs) { lhs.swap(rhs); }
 
 	template< class T, class Allocator>
-	bool operator==(vector<T, Allocator> const &lhs, vector<T, Allocator> const &rhs) { return (lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin())); };
+	bool operator==(vector<T, Allocator> const &lhs, vector<T, Allocator> const &rhs) { return (lhs.size() == rhs.size() && equal(lhs.begin(), lhs.end(), rhs.begin())); }
 	template< class T, class Allocator>
-	bool operator<(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); };
+	bool operator<(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
 	template< class T, class Allocator>
-	bool operator!=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs == rhs)); };
+	bool operator!=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs == rhs)); }
 	template< class T, class Allocator>
-	bool operator<=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return ((lhs < rhs) || (lhs == rhs)); };
+	bool operator<=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return ((lhs < rhs) || (lhs == rhs)); }
 	template< class T, class Allocator>
-	bool operator>(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (rhs < lhs); };
+	bool operator>(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (rhs < lhs); }
 	template< class T, class Allocator>
-	bool operator>=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs < rhs) || (lhs == rhs)); };
+	bool operator>=(const vector<T, Allocator>& lhs, const vector<T, Allocator>& rhs) { return (!(lhs < rhs) || (lhs == rhs)); }
 	
 }
 
