@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/17 17:36:39 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/21 13:39:58 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,15 +49,17 @@ namespace	ft
 			size_t		_size;
 			size_t		_capacity;
 
-			void		realloc(size_type new_capacity)
+			void		realloc(size_type new_capacity, bool n = true)
 			{
 				// if (new_capacity <)
 				// if (_capacity == 0 && new_capacity )
 				// 	new_capacity = 1;
-				if (new_capacity <= this->_capacity * 2)
+				if (new_capacity <= this->_capacity * 2 && n)
 					new_capacity = this->_capacity * 2;
+				if (_capacity > new_capacity)
+					new_capacity = _capacity;
 				T	*new_arr = this->_alloc.allocate(new_capacity);
-				if (this->_arr != NULL)
+				if (this->_arr != NULL && _capacity != 0)
 				{
 					for (size_t i = 0; i < this->_capacity; i++)
 						new_arr[i] = this->_arr[i];
@@ -147,6 +149,8 @@ namespace	ft
 			// Assign
 			void assign(size_type count, const T& value)
 			{
+				if (count <= 0 || count > INT_MAX)
+					throw std::length_error("vector");
 				if (this->_capacity > 0)
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 				this->_arr = this->_alloc.allocate(count);
@@ -193,14 +197,14 @@ namespace	ft
 			reference	at(size_type pos)
 			{
 				if (!(pos < this->_size))
-					throw	std::out_of_range("out of range");
+					throw	std::out_of_range("vector");
 				return (this->_arr[pos]);
 			}
 
 			const_reference	at(size_type pos) const
 			{
 				if (!(pos < this->_size))
-					throw	std::out_of_range("out of range");
+					throw	std::out_of_range("vector");
 				return (this->_arr[pos]);
 			}
 
@@ -246,12 +250,12 @@ namespace	ft
 			void	reserve(size_type new_cap)
 			{
 				if (new_cap > max_size())
-					throw std::length_error("Length error");
+					throw std::length_error("vector");
 				if (new_cap < this->_capacity)
 					return	;
 				T	*new_arr = this->_alloc.allocate(new_cap);
-				if (this->_arr != NULL)
-				{
+				if (this->_arr != NULL && this->_capacity != 0)
+				{	
 					for (size_t i = 0; i < this->_capacity; i++)
 						new_arr[i] = this->_arr[i];
 					this->_alloc.deallocate(this->_arr, this->_capacity);
@@ -474,10 +478,10 @@ namespace	ft
 			void		resize(size_type count, T value = T())
 			{
 				if (count > this->max_size())
-					throw std::length_error("Length error");
+					throw std::length_error("vector");
 				if (this->_size > count)
 				{
-					this->realloc(count);
+					this->realloc(count, false);
 					this->_size = count;
 				}
 				else if (this->_size < count)
