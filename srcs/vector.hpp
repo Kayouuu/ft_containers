@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/21 13:39:58 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/21 14:56:18 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,8 +140,7 @@ namespace	ft
 			// Destructor
 			~vector()
 			{
-				// TOCHECK ~Need to check if it's enough
-				// this->clear() ?
+				this->clear();
 				if (this->_capacity > 0)
 					this->_alloc.deallocate(this->_arr, this->_capacity);
 			}
@@ -151,8 +150,10 @@ namespace	ft
 			{
 				if (count <= 0 || count > INT_MAX)
 					throw std::length_error("vector");
-				if (this->_capacity > 0)
+				if (this->_capacity > 0 && _arr != NULL)
+				{
 					this->_alloc.deallocate(this->_arr, this->_capacity);
+				}
 				this->_arr = this->_alloc.allocate(count);
 				this->_size = count;
 				if (this->_capacity < this->_size)
@@ -164,18 +165,14 @@ namespace	ft
 			template<class InputIt>
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				// TOFIX with ft::distance
-				// InputIt tmp = first;
 				int	i = ft::distance(first, last);
 				int	j = 0;
-				if (this->_capacity > 0)
+
+				if (this->_capacity > 0 && this->_arr != NULL)
+				{
 					this->_alloc.deallocate(this->_arr, this->_capacity);
+				}
 				this->_capacity = 0;
-				// while (tmp != last)
-				// {
-				// 	i++;
-				// 	tmp++;
-				// }
 				this->_arr = this->_alloc.allocate(i);
 				while (j != i)
 				{
@@ -184,6 +181,8 @@ namespace	ft
 					first++;
 					j++;
 				}
+				if (i <= 0)
+					this->_capacity++;
 				this->_size = this->_capacity;
 			}
 

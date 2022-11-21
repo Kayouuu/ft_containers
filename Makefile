@@ -6,7 +6,7 @@
 #    By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/20 09:59:34 by psaulnie          #+#    #+#              #
-#    Updated: 2022/11/21 14:11:30 by psaulnie         ###   ########.fr        #
+#    Updated: 2022/11/21 14:16:46 by psaulnie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ LST_INCS = ft_containers.hpp \
 			iterators.hpp \
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-CFLAGS += -fsanitize=address -g3
+# CFLAGS += -fsanitize=address -g3
 
 CC = c++
 NAME = ft_containers

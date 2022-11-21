@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 10:44:24 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/21 14:01:23 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/21 14:56:37 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -151,7 +151,6 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 
 	v1.assign(v3.begin(), v3.end());
 	v2.assign(v4.begin(), v4.end());
-	
 	std_output << "Content is :" << std::endl;
 	for (; v1.begin() != v1.end(); )
 	{
@@ -166,7 +165,8 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 		ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
 		v2.pop_back();
 	}
-
+	std_output << "size: " << v1.size() << " ; capacity: " << v1.capacity() << std::endl;
+	ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
 	try
 	{
 		v1.assign(v3.begin(), v3.begin());
@@ -175,17 +175,14 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
 	try
 	{
-		v2.assign(v4.begin(), v4.begin());
+		v2.assign(v4.begin(), v4.begin()); 
 	}
 	catch(const std::exception& e)
 	{
 		std::cerr << e.what() << '\n';
 	}
-	
-
 	std_output << "Content is :" << std::endl;
 	for (; v1.begin() != v1.end(); )
 	{
@@ -234,7 +231,6 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 		ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
 		v2.pop_back();
 	}
-
 	return (diff());
 }
 
@@ -478,6 +474,10 @@ bool	clear_test(std::ofstream &std_output, std::ofstream &ft_output)
 		ft_output << "- " << *(v2.end() - 1) << std::endl;
 		v2.pop_back();
 	}
+
+	std::vector<int*>	a;
+	std::vector<int*>	b;
+
 	return (diff());
 }
 
