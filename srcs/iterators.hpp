@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/17 13:20:47 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/22 13:27:26 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,11 @@ namespace ft
 			explicit	reverse_iterator(iterator_type x): current(x) {};
 			template<class U>
 			reverse_iterator(reverse_iterator<U> const &other): current(other.base()) {};
-			// template<class U>
-			// reverse_iterator	&operator=(reverse_iterator<U> const &other) { this->current = other.base(); return (*this); }
 			~reverse_iterator() { }
 			
 			iterator_type	base() const { return (this->current); }
 			reference		operator*() const { Iter tmp = this->current; return (*--tmp); }
-			pointer			operator->() const { return (&(operator*())); } // TOCHECK
+			pointer			operator->() const { return (&(operator*())); }
 			
 			reference 			operator[](difference_type n) const { return (this->current[-n - 1]); }
 			reverse_iterator&	operator++() { --this->current; return (*this); }
@@ -104,7 +102,7 @@ namespace ft
 	template< class Iter >
 	reverse_iterator<Iter>
 		operator+(	typename reverse_iterator<Iter>::difference_type n,
-					const reverse_iterator<Iter>& it ) { return (reverse_iterator<Iter>(it.base() - n)); } // TOCHECK
+					const reverse_iterator<Iter>& it ) { return (reverse_iterator<Iter>(it.base() - n)); }
 	template< class Iterator, class Iterator2 >
 	typename reverse_iterator<Iterator>::difference_type
 		operator-(	const reverse_iterator<Iterator>& lhs,
@@ -122,7 +120,7 @@ namespace ft
 			typedef	typename std::random_access_iterator_tag			iterator_category;
 
 			// Constructors
-			RandomAccessIterator() : _ptr(NULL) { }; // TOCHECK
+			RandomAccessIterator() : _ptr(NULL) { };
 			RandomAccessIterator(pointer ptr) : _ptr(ptr) { };
 			RandomAccessIterator(RandomAccessIterator const &copy) { *this = copy; };
 			RandomAccessIterator	&operator=(RandomAccessIterator const &copy)

@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/21 14:56:18 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/22 13:27:42 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ namespace	ft
 		public:
 			vector() 
 			{
-				// TOCHECK
 				this->_size = 0;
 				this->_capacity = 0;
 			}
@@ -98,7 +97,6 @@ namespace	ft
 
 			explicit vector(const allocator_type& alloc)
 			{
-				// TOCHECK ~Need to check if it's enough / Possibly need to allocate a capacity
 				this->_alloc = alloc;
 				this->_size = 0;
 				this->_capacity = 0;
@@ -115,7 +113,6 @@ namespace	ft
 			template<class InputIt>
 			vector(InputIt first, InputIt last, const allocator_type& alloc = Allocator(), typename ft::enable_if< !ft::is_integral< InputIt >::value >::type* = 0 )
 			{
-				// TOCHECK
 				InputIt	copy = first;
 				int		i = 0;
 
@@ -412,7 +409,6 @@ namespace	ft
 
 			iterator	erase(iterator pos)
 			{
-				// TOCHECK
 				iterator	it = this->begin();
 				iterator	returned = this->begin();
 				int			i = 0;
@@ -437,7 +433,6 @@ namespace	ft
 
 			iterator	erase(iterator first, iterator last)
 			{
-				// TOCHECK
 				iterator	returned = first;
 				bool		n = false;
 

@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:17:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/17 16:15:27 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/22 13:26:57 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,6 @@ namespace	ft
 	struct iterator_traits<T*>;
 	template< class T >
 	struct iterator_traits<const T*>;
-	// // TOCHECK Need to check if it's working
 
 	template<class T, class Allocator>
 	class vector;
