@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/22 13:27:26 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/25 16:25:15 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,9 +145,6 @@ namespace ft
 			RandomAccessIterator	operator+(difference_type n) const { return (RandomAccessIterator(this->_ptr + n)); }
 			RandomAccessIterator	operator-(difference_type n) const { return (RandomAccessIterator(this->_ptr - n)); }
 			reference				operator[](difference_type pos) const { return (*(this->_ptr + pos)); }
-
-			// friend	RandomAccessIterator	operator+(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs);
-			// friend	RandomAccessIterator	operator-(RandomAccessIterator const &lhs, RandomAccessIterator const &rhs);
 		private:
 			pointer	_ptr;
 	};
@@ -191,6 +188,53 @@ namespace ft
 	typename RandomAccessIterator<T, Cont>::difference_type	operator-(RandomAccessIterator<T, Cont> const &lhs, RandomAccessIterator<T, Cont> const &rhs) { return (lhs.base() - rhs.base()); }
 	template <class T, class T2, typename Cont>
 	typename RandomAccessIterator<T, Cont>::difference_type	operator-(RandomAccessIterator<T, Cont> const &lhs, RandomAccessIterator<T2, Cont> const &rhs) { return (lhs.base() - rhs.base()); }
+
+	// TODO
+	template< typename T, typename Cont >
+	class	RBTreeIterator
+	{
+		public:
+			typedef typename ft::iterator_traits<T*>::value_type		value_type;
+			typedef	typename ft::iterator_traits<T*>::pointer			pointer;
+			typedef	typename ft::iterator_traits<T*>::reference			reference;
+			typedef typename ft::iterator_traits<T*>::difference_type	difference_type;
+			typedef	typename std::bidirectionnal_iterator_tag			iterator_category;
+
+			// Constructors
+			RBTreeIterator() : _ptr(NULL) { };
+			RBTreeIterator(pointer ptr) : _ptr(ptr) { };
+			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
+			RBTreeIterator	&operator=(RBTreeIterator const &copy)
+			{
+				_ptr = copy._ptr;
+				return (*this);
+			};
+			operator RBTreeIterator<const T, Cont> () const { return (RBTreeIterator<const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			// Destructor
+			~RBTreeIterator() { };
+
+			pointer	base() const { return (this->_ptr); }
+			// Operator overload
+			reference		operator*() const { return (*_ptr); }
+			pointer			operator->() { return (_ptr); }
+			RBTreeIterator	&operator++() { _ptr++; return (*this); }
+			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); }
+			RBTreeIterator	&operator--() { _ptr--; return (*this); }
+			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
+
+		private:
+			pointer	_ptr;
+	};
+
+	template <class T, typename Cont>
+	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a == &*b); }
+	template <class T, class T2, typename Cont>
+	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a == &*b); }
+
+	template <class T, typename Cont>
+	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a != &*b); }
+	template <class T, class T2, typename Cont>
+	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a != &*b); }
 }
 
 #endif
