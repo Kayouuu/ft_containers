@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/07 15:49:30 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/16 10:06:31 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/29 10:41:47 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,12 @@
 
 namespace	ft
 {
+	template<bool B, class T = void>
+	struct enable_if { };
+
+	template<class T>
+	struct enable_if<true, T> { typedef T type; };
+
 	template <typename T>
 	struct is_integral : std::false_type {};
 

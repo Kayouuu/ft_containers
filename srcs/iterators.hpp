@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/25 16:25:15 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/29 10:48:44 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,24 +14,25 @@
 # define ITERATORS_HPP
 
 #include "ft_containers.hpp"
+#include "tree.hpp"
 
 namespace ft
 {
 	template <class T>
 	struct iterator_traits
 	{
-		typedef typename T::value_type            value_type;
-		typedef typename T::difference_type       difference_type;
-		typedef typename T::iterator_category     iterator_category;
-		typedef typename T::pointer               pointer;
-		typedef typename T::reference             reference;
+		typedef typename T::value_type			value_type;
+		typedef typename T::difference_type		difference_type;
+		typedef typename T::iterator_category	iterator_category;
+		typedef typename T::pointer				pointer;
+		typedef typename T::reference			reference;
 	};
 	template <class T>
 	struct iterator_traits<T*>
 	{
 		typedef T                          		value_type;
 		typedef long int						difference_type;
-		typedef std::random_access_iterator_tag iterator_category; // Mandatory to use the std tag, otherwise STL algorithms wouldn't work 
+		typedef std::random_access_iterator_tag	iterator_category; // Mandatory to use the std tag, otherwise STL algorithms wouldn't work 
 		typedef T*                        		pointer;
 		typedef T&                         		reference;
 	};
@@ -198,7 +199,7 @@ namespace ft
 			typedef	typename ft::iterator_traits<T*>::pointer			pointer;
 			typedef	typename ft::iterator_traits<T*>::reference			reference;
 			typedef typename ft::iterator_traits<T*>::difference_type	difference_type;
-			typedef	typename std::bidirectionnal_iterator_tag			iterator_category;
+			typedef	typename std::bidirectional_iterator_tag			iterator_category;
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
@@ -215,26 +216,59 @@ namespace ft
 
 			pointer	base() const { return (this->_ptr); }
 			// Operator overload
-			reference		operator*() const { return (*_ptr); }
-			pointer			operator->() { return (_ptr); }
-			RBTreeIterator	&operator++() { _ptr++; return (*this); }
-			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); }
-			RBTreeIterator	&operator--() { _ptr--; return (*this); }
-			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
+			reference		operator*() const { return (*_ptr); } // TOCHECK
+			pointer			operator->() { return (_ptr); } // TOCHECK
+			RBTreeIterator	&operator++()
+			{
+				_ptr = next_iter(*_ptr);
+				return (*this);
+			} // TOCHECK
+
+			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); } // TOCHECK
+			RBTreeIterator	&operator--()
+			{
+				_ptr = prev_iter(*_ptr);
+				return (*this);
+			} // TOCHECK
+			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); } // TOCHECK
 
 		private:
 			pointer	_ptr;
+
+			bool	is_left_child(value_type node)
+			{
+				return (node == node->parent->left);
+			}
+			
+			pointer	next_iter(value_type node)
+			{
+				if (node->right != ft_nullptr)
+					return (minimum(node));
+				while (!is_left_child(node))
+					node = node->parent;
+				return (node->parent);
+			}
+
+			pointer	prev_iter(value_type node)
+			{
+				if (node->left != ft_nullptr)
+					return (maximum(node));
+				value_type	node2 = node;
+				while (is_left_child(node))
+					node2 = node2->parent;
+				return (node2->parent);
+			}
 	};
 
 	template <class T, typename Cont>
-	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a == &*b); }
+	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a == &*b); } // TODO
 	template <class T, class T2, typename Cont>
-	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a == &*b); }
+	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a == &*b); } // TODO
 
 	template <class T, typename Cont>
-	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a != &*b); }
+	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a != &*b); } // TODO
 	template <class T, class T2, typename Cont>
-	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a != &*b); }
+	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a != &*b); } // TODO
 }
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/25 16:18:05 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/29 10:50:01 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define TREE_HPP
 
 #include "ft_containers.hpp"
+#include "pair.hpp"
 #include <memory>
 #include <iostream>
 #include <map>
@@ -21,14 +22,13 @@
 template <typename Key, typename T>
 struct	s_tree
 {
-	std::pair<Key, T>	data; // TOFIX replace with ft::pair
+	ft::pair<Key, T>	data;
 	s_tree<Key, T>		*parent;
 	s_tree<Key, T>		*left;
 	s_tree<Key, T>		*right;
 	int					color; // either 0 => black or 1 => red
 };
 
-										
 /* *********************************Red-Black Tree Properties********************************* */
 /*																							   */
 /*	1-Every node in T is either red or black.												   */
@@ -47,8 +47,9 @@ template <typename Key, typename T>
 class RedBlackTree
 {
 	private:
-		typedef s_tree<Key, T>		*Node;
-		typedef	std::pair<Key, T>	Data; // TOFIX replace with ft::pair
+		typedef s_tree<Key, T>			*Node;
+		typedef	ft::pair<Key, T>		pair_type;
+		typedef	ft::pair<const Key, T>	const_pair_type;
 
 		Node			root;
 		Node			TNULL;
@@ -239,13 +240,6 @@ class RedBlackTree
 			node->color = 0;
 		}
 
-		// Return the lowest value of the tree
-		Node	minimum(Node node)
-		{
-			while (node->left != TNULL)
-				node = node->left;
-			return (node);
-		}
 
 		Node searchEngine(Key const &key, Node node)
 		{
@@ -276,7 +270,7 @@ class RedBlackTree
 			// TODO
 		}
 
-		void	insert(Data	pair)
+		void	insert(pair_type pair)
 		{
 			// Initializing new node
 			Node	node = new s_tree<Key, T>;
@@ -379,8 +373,23 @@ class RedBlackTree
 			
 		}
 
+		// Return the lowest value of the tree
+		Node	minimum(Node node)
+		{
+			while (node->left != TNULL)
+				node = node->left;
+			return (node);
+		}
 
-		Node	search(Key const &key) { return (searchEngine(key, this->root)); }
+		// Return the highest value of the tree
+		Node	maximum(Node node)
+		{
+			while (node->right != TNULL)
+				node = node->right;
+			return (node);
+		}
+
+		Node	search(Key const &key) { return (searchEngine(key, this->root)); } // TOCHECK for const
 
 		Node	&getRoot() { return (this->root); }
 

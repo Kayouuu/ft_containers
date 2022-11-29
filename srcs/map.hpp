@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/22 16:17:30 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/29 11:54:55 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MAP_HPP
 
 #include "ft_containers.hpp"
+#include "tree.hpp"
 
 namespace ft
 {
@@ -37,30 +38,37 @@ namespace ft
 			typedef	const value_type&						const_reference;
 			typedef	typename Allocator::pointer				pointer;
 			typedef typename Allocator::const_pointer		const_pointer;
-			// typedef	BidirectionnalIterator				iterator; // TOCHECK
-			// typedef	BidirectionnalIteral const			const_iterator; // TOCHECK
+			typedef	RBTreeIterator							iterator; // TOCHECK
+			typedef	RBTreeIterator const					const_iterator; // TOCHECK
 			typedef	ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef	ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 			class value_compare; // TODO
 		private:
-			// TOFILL
+			// TOCHECK maybe a _capacity var ?
+			RedBlackTree<class Key, class T>	_tree;
+			size_type							_size;
+			allocator_type						_alloc;
+			
 		public:
 			// Constructor
-			map()
+			map() // TOCHECK
 			{
-				// TODO
+				_size = 0;
 			}
 
 			explicit map(Compare const &comp, Allocator const &alloc = Allocator())
 			{
-				// TODO
+				// TODO assign comp to value_compare
+				_size = 0;
+				_alloc = alloc;
 			}
 
 			template <class InputIt>
 			map(InputIt first, InputIt last, Compare const &comp = Compare(), Allocator const &alloc = Allocator())
 			{
-				// TODO
+				// TODO assign comp to value_compare + add InputIt
+				_alloc = alloc;
 			}
 
 			map(map const &other)
@@ -80,10 +88,7 @@ namespace ft
 			}
 
 			// Get_allocator
-			allocator_type	get_allocator() const
-			{
-				// TODO
-			}
+			allocator_type	get_allocator() const { return (this->_alloc); }
 
 			// Element access
 			T	&at(Key const &key)
@@ -99,27 +104,30 @@ namespace ft
 			T	&operator[](Key const &key)
 			{
 				// TODO
+				s_tree *tmp = _tree.search(key);
+				if (tmp == NULL)
+				{
+					_tree.insert(ft::make_pair<Key, T>(key, T())); // TOFIX make insert function returns the newly inserted value for better performance
+					_tree.search(key);
+				}
+				return (tmp->data.second);
 			}
 			
 			// Iterators
-			iterator	begin()
-			{
-				// TODO
-			}
+			iterator	begin() { return (RBTreeIterator<T>(_tree.minimum(_tree.root))); }
 
-			const_iterator	begin() const
-			{
-				// TODO
-			}
+			const_iterator	begin() const { return (RBTreeIterator<T>(_tree.minimum(_tree.root))); }
 
 			iterator	end()
 			{
 				// TODO
+				return (RBTreeIterator<T>(++_tree.maximum(_tree.root)));
 			}
 
 			const_iterator	end() const
 			{
 				// TODO
+				return (RBTreeIterator<T>(++_tree.maximum(_tree.root)));
 			}
 
 			reverse_iterator	rbegin()
@@ -167,11 +175,7 @@ namespace ft
 			ft::pair<iterator, bool>	insert(value_type const &value)
 			{
 				// TODO
-			}
-
-			iterator	insert(iterator pos, value_type const &value)
-			{
-				// TODO
+				_tree.insert(value);
 			}
 
 			template<class InputIt>

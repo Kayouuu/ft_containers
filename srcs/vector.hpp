@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/22 13:27:42 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/11/29 10:41:22 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <memory>
 #include "iterators.hpp"
 #include "ft_containers.hpp"
+#include "is_integral.hpp"
+#include <limits.h>
 
 namespace	ft
 {
@@ -162,7 +164,7 @@ namespace	ft
 			template<class InputIt>
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				int	i = ft::distance(first, last);
+				int	i = std::distance(first, last);
 				int	j = 0;
 
 				if (this->_capacity > 0 && this->_arr != NULL)
