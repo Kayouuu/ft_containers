@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 10:50:01 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/01 15:13:25 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,7 @@ class RedBlackTree
 		typedef s_tree<Key, T>			*Node;
 		typedef	ft::pair<Key, T>		pair_type;
 		typedef	ft::pair<const Key, T>	const_pair_type;
-
+	public:
 		Node			root;
 		Node			TNULL;
 	private:
@@ -63,7 +63,7 @@ class RedBlackTree
 			if (y->left != TNULL) // if y is the root
 				y->left->parent = x;
 			y->parent = x->parent; // y new parent become x parent
-			if (x->parent == ft_nullptr) // if x is the root, then y become the new root
+			if (x->parent == NULL) // if x is the root, then y become the new root
 				this->root = y;
 			else if (x == x->parent->left) // whether x is on the left of it's parent, we change it to y
 				x->parent->left = y;
@@ -83,7 +83,7 @@ class RedBlackTree
 			if (y->right != TNULL)
 				y->right->parent = x;
 			y->parent = x->parent;
-			if (x->parent == ft_nullptr)
+			if (x->parent == NULL)
 				this->root = y;
 			else if (x == x->parent->right)
 				x->parent->right = y;
@@ -100,7 +100,7 @@ class RedBlackTree
 		// Need to understand
 		void	rb_transplant(Node u, Node v)
 		{
-			if (u->parent == ft_nullptr)
+			if (u->parent == NULL)
 				root = v;
 			else if (u == u->parent->left)
 				u->parent->left = v;
@@ -260,8 +260,8 @@ class RedBlackTree
 			// TOCHECK
 			TNULL = new s_tree<Key, T>;
 			TNULL->color = 0;
-			TNULL->left = ft_nullptr;
-			TNULL->right = ft_nullptr;
+			TNULL->left = NULL;
+			TNULL->right = NULL;
 			root = TNULL;
 		}
 		
@@ -270,18 +270,17 @@ class RedBlackTree
 			// TODO
 		}
 
-		void	insert(pair_type pair)
+		s_tree<Key, T>	insert(pair_type const &pair)
 		{
 			// Initializing new node
 			Node	node = new s_tree<Key, T>;
 			
-			node->parent = ft_nullptr;
+			node->parent = NULL;
 			node->data = pair;
 			node->left = TNULL;
 			node->right = TNULL;
 			node->color = 1;
-
-			Node	y = ft_nullptr;
+			Node	y = NULL;
 			Node	x = this->root;
 			
 			while (x != TNULL) // Searching the value with comparison
@@ -294,22 +293,23 @@ class RedBlackTree
 			}
 			
 			node->parent = y; // Setting the parent
-			if (y == ft_nullptr) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
+			if (y == NULL) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
 				root = node;
 			else if (node->data.first < y->data.first) // Setting where our node is supposed to go
 				y->left = node;
 			else
 				y->right = node;
-
-			if (node->parent == ft_nullptr) // If node is the root, then it don't need to be balanced but the root must be black
+			
+			if (node->parent == NULL) // If node is the root, then it don't need to be balanced but the root must be black
 			{
 				node->color = 0;
-				return ;
+				return (*node);
 			}
-			if (node->parent->parent == ft_nullptr) // If node is near the root, it don't need to be balanced
-				return ;
-			
+			if (node->parent->parent == NULL) // If node is near the root, it don't need to be balanced
+				return (*node);
+			Node copy = node;
 			this->fix_insert(node);
+			return (*copy);
 		}
 
 		void	erase(Key key)

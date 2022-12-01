@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 11:54:55 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/01 15:53:43 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define MAP_HPP
 
 #include "ft_containers.hpp"
+#include "iterators.hpp"
 #include "tree.hpp"
 
 namespace ft
@@ -22,33 +23,33 @@ namespace ft
 		class Key,
 		class T,
 		class Compare = std::less<Key>, // TOCHECK if need to code std::less
-		class Allocator = std::allocator<std::pair<const Key, T>>
+		class Allocator = std::allocator< ft::pair<const Key, T> >
 	>
 	class map
 	{
 		public:
 			typedef Key										key_type;
 			typedef	T										mapped_type;
-			typedef	typename std::pair<const Key, T>		value_type;
+			typedef	typename ft::pair< Key, T>				value_type; // TOFIX hould have const Key template parameter 
 			typedef	size_t									size_type;
 			typedef	long int								difference_type;
-			typedef	typename Compare						key_compare;
-			typedef typename Allocator						allocator_type;
+			typedef Compare									key_compare;
+			typedef Allocator								allocator_type;
 			typedef value_type&								reference;
 			typedef	const value_type&						const_reference;
 			typedef	typename Allocator::pointer				pointer;
 			typedef typename Allocator::const_pointer		const_pointer;
-			typedef	RBTreeIterator							iterator; // TOCHECK
-			typedef	RBTreeIterator const					const_iterator; // TOCHECK
+			typedef	RBTreeIterator<Key, T, s_tree<Key, T>, map>			iterator;
+			typedef	const RBTreeIterator<Key, T, s_tree<Key, T>, map>	const_iterator;
 			typedef	ft::reverse_iterator<iterator>			reverse_iterator;
 			typedef	ft::reverse_iterator<const_iterator>	const_reverse_iterator;
 
 			class value_compare; // TODO
 		private:
 			// TOCHECK maybe a _capacity var ?
-			RedBlackTree<class Key, class T>	_tree;
-			size_type							_size;
-			allocator_type						_alloc;
+			RedBlackTree<Key, T>	_tree;
+			size_type				_size;
+			allocator_type			_alloc;
 			
 		public:
 			// Constructor
@@ -104,7 +105,7 @@ namespace ft
 			T	&operator[](Key const &key)
 			{
 				// TODO
-				s_tree *tmp = _tree.search(key);
+				s_tree<Key, T> *tmp = _tree.search(key);
 				if (tmp == NULL)
 				{
 					_tree.insert(ft::make_pair<Key, T>(key, T())); // TOFIX make insert function returns the newly inserted value for better performance
@@ -114,20 +115,24 @@ namespace ft
 			}
 			
 			// Iterators
-			iterator	begin() { return (RBTreeIterator<T>(_tree.minimum(_tree.root))); }
+			iterator	begin() { return (iterator(_tree.minimum(_tree.root))); }
 
-			const_iterator	begin() const { return (RBTreeIterator<T>(_tree.minimum(_tree.root))); }
+			const_iterator	begin() const { return (const_iterator(_tree.minimum(_tree.root))); }
 
 			iterator	end()
 			{
 				// TODO
-				return (RBTreeIterator<T>(++_tree.maximum(_tree.root)));
+				iterator it(_tree.maximum(_tree.root));
+				it++;
+				return (it);
 			}
 
 			const_iterator	end() const
 			{
 				// TODO
-				return (RBTreeIterator<T>(++_tree.maximum(_tree.root)));
+				const_iterator it(_tree.maximum(_tree.root));
+				it++;
+				return (it);
 			}
 
 			reverse_iterator	rbegin()
@@ -175,7 +180,14 @@ namespace ft
 			ft::pair<iterator, bool>	insert(value_type const &value)
 			{
 				// TODO
-				_tree.insert(value);
+				// if (_size == 0)
+				// 	_tree = new RedBlackTree<Key, T>();
+
+				s_tree<Key, T> node = _tree.insert(value);
+				iterator it(&node);
+				// if (it == NULL)
+				// 	return (ft::pair<iterator, bool>(it, false));
+				return (ft::pair<iterator, bool>(it, true));
 			}
 
 			template<class InputIt>
@@ -256,7 +268,7 @@ namespace ft
 				// TODO
 			}
 
-			ft::map::value_compare	value_comp() const
+			map::value_compare	value_comp() const
 			{
 				// TODO
 			}

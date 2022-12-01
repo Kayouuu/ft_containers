@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 10:48:44 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/01 15:58:20 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -191,9 +191,37 @@ namespace ft
 	typename RandomAccessIterator<T, Cont>::difference_type	operator-(RandomAccessIterator<T, Cont> const &lhs, RandomAccessIterator<T2, Cont> const &rhs) { return (lhs.base() - rhs.base()); }
 
 	// TODO
-	template< typename T, typename Cont >
+	template< typename Key, typename U, typename T, typename Cont >
 	class	RBTreeIterator
 	{
+		private:
+			// Return the lowest value of the tree
+			s_tree<Key, U>	*minimum(s_tree<Key, U>	*node)
+			{
+				s_tree<Key, U>	*TNULL;
+				TNULL = new s_tree<Key, U>;
+				TNULL->color = 0;
+				TNULL->left = NULL;
+				TNULL->right = NULL;
+				while (node && node->left != TNULL)
+					node = node->left;
+				delete TNULL;
+				return (node);
+			}
+
+			// Return the highest value of the tree
+			s_tree<Key, U>	*maximum(s_tree<Key, U>	*node)
+			{
+				s_tree<Key, U>	*TNULL;
+				TNULL = new s_tree<Key, U>;
+				TNULL->color = 0;
+				TNULL->left = NULL;
+				TNULL->right = NULL;
+				while (node && node->right != TNULL)
+					node = node->right;
+				delete TNULL;
+				return (node);
+			}
 		public:
 			typedef typename ft::iterator_traits<T*>::value_type		value_type;
 			typedef	typename ft::iterator_traits<T*>::pointer			pointer;
@@ -203,72 +231,81 @@ namespace ft
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
-			RBTreeIterator(pointer ptr) : _ptr(ptr) { };
+			RBTreeIterator(pointer ptr) : _ptr(ptr)  { };
 			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
 			RBTreeIterator	&operator=(RBTreeIterator const &copy)
 			{
 				_ptr = copy._ptr;
 				return (*this);
 			};
-			operator RBTreeIterator<const T, Cont> () const { return (RBTreeIterator<const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RBTreeIterator<Key, U, const T, Cont> () const { return (RBTreeIterator<Key, U, const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
 			// Destructor
 			~RBTreeIterator() { };
 
-			pointer	base() const { return (this->_ptr); }
+			pointer	base() const { return (this->_ptr->data); }
 			// Operator overload
-			reference		operator*() const { return (*_ptr); } // TOCHECK
-			pointer			operator->() { return (_ptr); } // TOCHECK
+			ft::pair<Key, U>		operator*() const { return (_ptr->data); } // TOCHECK
+			ft::pair<Key, U>		*operator->() { return &(_ptr->data); } // TOCHECK
 			RBTreeIterator	&operator++()
 			{
-				_ptr = next_iter(*_ptr);
+				_ptr = next_iter(_ptr);
 				return (*this);
 			} // TOCHECK
 
-			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); } // TOCHECK
+			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); }
 			RBTreeIterator	&operator--()
 			{
-				_ptr = prev_iter(*_ptr);
+				_ptr = prev_iter(_ptr);
 				return (*this);
 			} // TOCHECK
-			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); } // TOCHECK
+			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
 
 		private:
 			pointer	_ptr;
 
-			bool	is_left_child(value_type node)
+			bool	is_left_child(s_tree<Key, U> *node)
 			{
-				return (node == node->parent->left);
+				return (node && node->parent && node == node->parent->left);
 			}
 			
-			pointer	next_iter(value_type node)
+			pointer	next_iter(s_tree<Key, U> *node)
 			{
-				if (node->right != ft_nullptr)
+				if (node->right != NULL)
 					return (minimum(node));
 				while (!is_left_child(node))
 					node = node->parent;
 				return (node->parent);
 			}
 
-			pointer	prev_iter(value_type node)
+			pointer	prev_iter(s_tree<Key, U> *node)
 			{
-				if (node->left != ft_nullptr)
-					return (maximum(node));
-				value_type	node2 = node;
-				while (is_left_child(node))
-					node2 = node2->parent;
-				return (node2->parent);
+				if (node->left != NULL) // TOFIX if !node => renvoyer maximum de l'arbre (voir si pose probleme pour begin()--)
+					return (maximum(node->left));
+				s_tree<Key, U>	*node2 = node;
+				while (is_left_child(node2))
+				{
+					if (node2->parent)
+						node2 = node2->parent;
+				}
+				if (node2 && node2->parent)
+					return (node2->parent);
+				return (node2);
 			}
+
+			friend bool operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b);
+			template <class T2>
+			friend bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b);
 	};
 
-	template <class T, typename Cont>
-	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a == &*b); } // TODO
-	template <class T, class T2, typename Cont>
-	bool	operator==(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a == &*b); } // TODO
+	template <class Key, class U, class T, typename Cont>
+	bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (&*a._ptr->data.first == &*b._ptr->data.first && &*a._ptr->data.second == &*b._ptr->data.second); } // TODO
+	template <class Key, class U, class T, class T2, typename Cont>
+	bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (&*a._ptr->data.first == &*b._ptr->data.first && &*a._ptr->data.second == &*b._ptr->data.second); } // TODO
 
-	template <class T, typename Cont>
-	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T, Cont> const &b) { return (&*a != &*b); } // TODO
-	template <class T, class T2, typename Cont>
-	bool	operator!=(RBTreeIterator<T, Cont> const &a, RBTreeIterator<T2, Cont> const &b) { return (&*a != &*b); } // TODO
+	template <class Key, class U, class T, typename Cont>
+	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (!(&*a == &*b)); } // TODO
+	template <class Key, class U, class T, class T2, typename Cont>
+	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (!(&*a == &*b)); } // TODO
 }
 
 #endif
