@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/01 15:13:25 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/02 15:27:58 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,9 @@ struct	s_tree
 	s_tree<Key, T>		*right;
 	int					color; // either 0 => black or 1 => red
 };
+
+template <typename Key, typename T>
+s_tree<Key, T>	*TNULL;
 
 /* *********************************Red-Black Tree Properties********************************* */
 /*																							   */
@@ -52,7 +55,7 @@ class RedBlackTree
 		typedef	ft::pair<const Key, T>	const_pair_type;
 	public:
 		Node			root;
-		Node			TNULL;
+		// Node			TNULL;
 	private:
 		void	left_rotate(Node x)
 		{
@@ -60,7 +63,7 @@ class RedBlackTree
 
 			y = x->right;
 			x->right = y->left; // exchanging sub-trees
-			if (y->left != TNULL) // if y is the root
+			if (y->left != TNULL<Key, T>) // if y is the root
 				y->left->parent = x;
 			y->parent = x->parent; // y new parent become x parent
 			if (x->parent == NULL) // if x is the root, then y become the new root
@@ -80,7 +83,7 @@ class RedBlackTree
 
 			y = x->left;
 			x->left = y->right;
-			if (y->right != TNULL)
+			if (y->right != TNULL<Key, T>)
 				y->right->parent = x;
 			y->parent = x->parent;
 			if (x->parent == NULL)
@@ -244,7 +247,7 @@ class RedBlackTree
 		Node searchEngine(Key const &key, Node node)
 		{
 			// TODO
-			if (node == TNULL)
+			if (node == TNULL<Key, T>)
 				return (NULL);
 			if (key == node->data.first)
 				return (node);
@@ -258,11 +261,11 @@ class RedBlackTree
 		RedBlackTree()
 		{
 			// TOCHECK
-			TNULL = new s_tree<Key, T>;
-			TNULL->color = 0;
-			TNULL->left = NULL;
-			TNULL->right = NULL;
-			root = TNULL;
+			TNULL<Key, T> = new s_tree<Key, T>;
+			TNULL<Key, T>->color = 0;
+			TNULL<Key, T>->left = NULL;
+			TNULL<Key, T>->right = NULL;
+			root = TNULL<Key, T>;
 		}
 		
 		~RedBlackTree()
@@ -277,15 +280,17 @@ class RedBlackTree
 			
 			node->parent = NULL;
 			node->data = pair;
-			node->left = TNULL;
-			node->right = TNULL;
+			node->left = TNULL<Key, T>;
+			node->right = TNULL<Key, T>;
 			node->color = 1;
 			Node	y = NULL;
 			Node	x = this->root;
 			
-			while (x != TNULL) // Searching the value with comparison
+			while (x != TNULL<Key, T>) // Searching the value with comparison
 			{
 				y = x;
+				if (node->data.first == x->data.first)
+					return (NULL);
 				if (node->data.first < x->data.first)
 					x = x->left;
 				else
@@ -314,17 +319,16 @@ class RedBlackTree
 
 		void	erase(Key key)
 		{
-			// TODO
 			int		y_color;
 			Node	node = this->root;
 			Node	x;
 			Node	y;
-			Node	z = TNULL;
+			Node	z = TNULL<Key, T>;
 
 			// Looking for the node
-			while (node != TNULL)
+			while (node != TNULL<Key, T>)
 			{
-				if (node->data.first ==  key)
+				if (node->data.first == key)
 					z = node;
 				// Key comparison, if < => Go left, if > => Go right
 				if (node->data.first <= key)
@@ -333,18 +337,18 @@ class RedBlackTree
 					node = node->left;
 			}
 			// Return if the key don't exist
-			if (z == TNULL)
+			if (z == TNULL<Key, T>)
 				return ;
 			
 			// Deleting the node
 			y = z;
 			y_color = y->color;
-			if (z->left == TNULL)
+			if (z->left == TNULL<Key, T>)
 			{
 				x = z->right;
 				rb_transplant(z, z->right);
 			}
-			else if (z->right == TNULL)
+			else if (z->right == TNULL<Key, T>)
 			{
 				x = z->left;
 				rb_transplant(z, z->left);
@@ -376,16 +380,23 @@ class RedBlackTree
 		// Return the lowest value of the tree
 		Node	minimum(Node node)
 		{
-			while (node->left != TNULL)
+			while (node->left != TNULL<Key, T>)
 				node = node->left;
 			return (node);
 		}
 
 		// Return the highest value of the tree
-		Node	maximum(Node node)
+		Node	maximum(Node node, bool end = false)
 		{
-			while (node->right != TNULL)
+			while (node->right != TNULL<Key, T>)
 				node = node->right;
+			if (end)
+			{
+				Node	node2 = node;
+				node = node->right;
+				node->parent = node2;
+				return (node);
+			}
 			return (node);
 		}
 

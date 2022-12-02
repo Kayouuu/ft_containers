@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/01 15:58:20 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/02 13:56:38 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,9 @@
 
 #include "ft_containers.hpp"
 #include "tree.hpp"
+
+template <typename Key, typename T>
+extern s_tree<Key, T>	*TNULL;
 
 namespace ft
 {
@@ -198,28 +201,16 @@ namespace ft
 			// Return the lowest value of the tree
 			s_tree<Key, U>	*minimum(s_tree<Key, U>	*node)
 			{
-				s_tree<Key, U>	*TNULL;
-				TNULL = new s_tree<Key, U>;
-				TNULL->color = 0;
-				TNULL->left = NULL;
-				TNULL->right = NULL;
-				while (node && node->left != TNULL)
+				while (node->left != NULL && node->left != TNULL<Key, U>)
 					node = node->left;
-				delete TNULL;
 				return (node);
 			}
 
 			// Return the highest value of the tree
 			s_tree<Key, U>	*maximum(s_tree<Key, U>	*node)
 			{
-				s_tree<Key, U>	*TNULL;
-				TNULL = new s_tree<Key, U>;
-				TNULL->color = 0;
-				TNULL->left = NULL;
-				TNULL->right = NULL;
-				while (node && node->right != TNULL)
+				while (node->right != TNULL<Key, U> && node->right != NULL)
 					node = node->right;
-				delete TNULL;
 				return (node);
 			}
 		public:
@@ -244,20 +235,19 @@ namespace ft
 
 			pointer	base() const { return (this->_ptr->data); }
 			// Operator overload
-			ft::pair<Key, U>		operator*() const { return (_ptr->data); } // TOCHECK
-			ft::pair<Key, U>		*operator->() { return &(_ptr->data); } // TOCHECK
+			ft::pair<Key, U>		operator*() const { return (_ptr->data); }
+			ft::pair<Key, U>		*operator->() { return &(_ptr->data); }
 			RBTreeIterator	&operator++()
 			{
 				_ptr = next_iter(_ptr);
 				return (*this);
-			} // TOCHECK
-
+			}
 			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); }
 			RBTreeIterator	&operator--()
 			{
 				_ptr = prev_iter(_ptr);
 				return (*this);
-			} // TOCHECK
+			}
 			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
 
 		private:
@@ -270,8 +260,8 @@ namespace ft
 			
 			pointer	next_iter(s_tree<Key, U> *node)
 			{
-				if (node->right != NULL)
-					return (minimum(node));
+				if (node->right != NULL && node->right != TNULL<Key, U>)
+					return (minimum(node->right));
 				while (!is_left_child(node))
 					node = node->parent;
 				return (node->parent);
@@ -279,17 +269,12 @@ namespace ft
 
 			pointer	prev_iter(s_tree<Key, U> *node)
 			{
-				if (node->left != NULL) // TOFIX if !node => renvoyer maximum de l'arbre (voir si pose probleme pour begin()--)
+				if (node->left != NULL && node->left != TNULL<Key, U>)
 					return (maximum(node->left));
 				s_tree<Key, U>	*node2 = node;
 				while (is_left_child(node2))
-				{
-					if (node2->parent)
-						node2 = node2->parent;
-				}
-				if (node2 && node2->parent)
-					return (node2->parent);
-				return (node2);
+					node2 = node2->parent;
+				return (node2->parent);
 			}
 
 			friend bool operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b);
@@ -303,9 +288,9 @@ namespace ft
 	bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (&*a._ptr->data.first == &*b._ptr->data.first && &*a._ptr->data.second == &*b._ptr->data.second); } // TODO
 
 	template <class Key, class U, class T, typename Cont>
-	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (!(&*a == &*b)); } // TODO
+	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (!(&*a == &*b)); }
 	template <class Key, class U, class T, class T2, typename Cont>
-	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (!(&*a == &*b)); } // TODO
+	bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (!(&*a == &*b)); }
 }
 
 #endif

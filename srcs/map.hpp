@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/01 15:53:43 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/02 16:06:07 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,23 +94,25 @@ namespace ft
 			// Element access
 			T	&at(Key const &key)
 			{
-				// TODO
+				s_tree<Key, T>	*node = _tree.search(key);
+				if (node == NULL)
+					throw std::out_of_range("map");
+				return (node->data.second);
 			}
-
 			T const	&at(Key const &key) const
 			{
-				// TODO
+				s_tree<Key, T>	*node = _tree.search(key);
+				if (node == NULL)
+					throw std::out_of_range("map");
+				return (node->data.second);
 			}
 
 			T	&operator[](Key const &key)
 			{
-				// TODO
+				// TOCHECK
 				s_tree<Key, T> *tmp = _tree.search(key);
 				if (tmp == NULL)
-				{
-					_tree.insert(ft::make_pair<Key, T>(key, T())); // TOFIX make insert function returns the newly inserted value for better performance
-					_tree.search(key);
-				}
+					return (_tree.insert(ft::make_pair<Key, T>(key, T())).data.second);
 				return (tmp->data.second);
 			}
 			
@@ -122,54 +124,27 @@ namespace ft
 			iterator	end()
 			{
 				// TODO
-				iterator it(_tree.maximum(_tree.root));
-				it++;
+				iterator it(_tree.maximum(_tree.root, true));
 				return (it);
 			}
 
 			const_iterator	end() const
 			{
 				// TODO
-				const_iterator it(_tree.maximum(_tree.root));
-				it++;
+				const_iterator it(_tree.maximum(_tree.root, true));
 				return (it);
 			}
 
-			reverse_iterator	rbegin()
-			{
-				// TODO
-			}
-
-			const_reverse_iterator	rbegin() const
-			{
-				// TODO
-			}
-
-			reverse_iterator	rend()
-			{
-				// TODO
-			}
-			
-			const_reverse_iterator	rend() const
-			{
-				// TODO
-			}
+			reverse_iterator	rbegin() { return (reverse_iterator(begin())); }
+			const_reverse_iterator	rbegin() const { return (const_reverse_iterator(begin())); }
+			reverse_iterator	rend() { return (reverse_iterator(end())); }
+			const_reverse_iterator	rend() const { return (const_reverse_iterator(begin())); }
 
 			// Capacity
-			bool	empty() const
-			{
-				// TODO
-			}
+			bool	empty() const { return (this->_size == 0); }
+			size_type	size() const { return (this->_size); }
 
-			size_type	size() const
-			{
-				// TODO
-			}
-
-			size_type	max_size() const
-			{
-				// TODO
-			}
+			size_type	max_size() const { return (this->_alloc.max_size()); }
 
 			// Modifiers
 			void	clear()
@@ -179,31 +154,52 @@ namespace ft
 
 			ft::pair<iterator, bool>	insert(value_type const &value)
 			{
-				// TODO
-				// if (_size == 0)
-				// 	_tree = new RedBlackTree<Key, T>();
-
+				// TOCHECK returned value (seems now good)
+				bool	inserted = false;
 				s_tree<Key, T> node = _tree.insert(value);
 				iterator it(&node);
-				// if (it == NULL)
-				// 	return (ft::pair<iterator, bool>(it, false));
-				return (ft::pair<iterator, bool>(it, true));
+				this->_size++;
+				if ((*it))
+					inserted = true;
+				return (ft::pair<iterator, bool>(it, inserted));
+			}
+
+			iterator insert(iterator pos, const value_type& value)
+			{
+				// TOCHECK returned value (seems now good)
+				(void)pos;
+				bool	inserted = false;
+				s_tree<Key, T> node = _tree.insert(value);
+				iterator it(&node);
+				this->_size++;
+				if ((*it))
+					inserted = true;
+				return (ft::pair<iterator, bool>(it, inserted));
 			}
 
 			template<class InputIt>
 			void	insert(InputIt first, InputIt last)
 			{
-				// TODO
+				while (first != last)
+				{
+					insert(*first);
+					first++;
+				}
 			}
 
-			iterator	erase(iterator pos)
+			void	erase(iterator pos)
 			{
-				// TODO
+				_tree.erase((*pos).first);
+				this->size--;
 			}
 
-			iterator	erase(iterator first, iterator last)
+			void	erase(iterator first, iterator last)
 			{
-				// TODO
+				while (first != last)
+				{
+					erase(first);
+					first++;
+				}
 			}
 
 			size_type	erase(Key const &key)
@@ -213,7 +209,9 @@ namespace ft
 			
 			void	swap(map &other)
 			{
-				// TODO
+				std::swap(this->_alloc, other._alloc);
+				std::swap(this->_size, other._size);
+				std::swap(this->_tree, other._tree);
 			}
 
 			// Lookup
@@ -224,12 +222,18 @@ namespace ft
 
 			iterator	find(Key const &key)
 			{
-				// TODO
+				s_tree<Key, T> *tmp = _tree.search(key);
+				if (tmp == NULL)
+					return (end());
+				return (it(tmp));
 			}
 
 			const_iterator	find(Key const &key) const
 			{
-				// TODO
+				s_tree<Key, T> *tmp = _tree.search(key);
+				if (tmp == NULL)
+					return (end());
+				return (it(tmp));
 			}
 			
 			std::pair<iterator, iterator>	equal_range(Key const &key)
@@ -275,5 +279,7 @@ namespace ft
 	};
 	
 	//	TODO Add friend functions (operator==, etc... + )
+	template<class Key, class T, class Compare, class Alloc>
+	void swap(std::map<Key,T,Compare,Alloc>& lhs, std::map<Key,T,Compare,Alloc>& rhs) { lhs.swap(rhs); }
 }
 #endif
