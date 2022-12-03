@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/02 15:27:58 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/03 18:07:22 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,15 +22,12 @@
 template <typename Key, typename T>
 struct	s_tree
 {
-	ft::pair<Key, T>	data;
+	ft::pair<const Key, T>	data;
 	s_tree<Key, T>		*parent;
 	s_tree<Key, T>		*left;
 	s_tree<Key, T>		*right;
 	int					color; // either 0 => black or 1 => red
 };
-
-template <typename Key, typename T>
-s_tree<Key, T>	*TNULL;
 
 /* *********************************Red-Black Tree Properties********************************* */
 /*																							   */
@@ -50,12 +47,13 @@ template <typename Key, typename T>
 class RedBlackTree
 {
 	private:
-		typedef s_tree<Key, T>			*Node;
-		typedef	ft::pair<Key, T>		pair_type;
-		typedef	ft::pair<const Key, T>	const_pair_type;
+		typedef s_tree<Key, T>					*Node;
+		typedef	ft::pair<const Key, T>			pair_type;
+		typedef	ft::pair<const Key, const T>	const_pair_type;
 	public:
-		Node			root;
-		// Node			TNULL;
+		Node					root;
+		Node					TNULL;
+		std::allocator< s_tree<Key, T> >	alloc;
 	private:
 		void	left_rotate(Node x)
 		{
@@ -63,7 +61,7 @@ class RedBlackTree
 
 			y = x->right;
 			x->right = y->left; // exchanging sub-trees
-			if (y->left != TNULL<Key, T>) // if y is the root
+			if (y->left != TNULL) // if y is the root
 				y->left->parent = x;
 			y->parent = x->parent; // y new parent become x parent
 			if (x->parent == NULL) // if x is the root, then y become the new root
@@ -83,7 +81,7 @@ class RedBlackTree
 
 			y = x->left;
 			x->left = y->right;
-			if (y->right != TNULL<Key, T>)
+			if (y->right != TNULL)
 				y->right->parent = x;
 			y->parent = x->parent;
 			if (x->parent == NULL)
@@ -247,7 +245,7 @@ class RedBlackTree
 		Node searchEngine(Key const &key, Node node)
 		{
 			// TODO
-			if (node == TNULL<Key, T>)
+			if (node == TNULL)
 				return (NULL);
 			if (key == node->data.first)
 				return (node);
@@ -261,32 +259,33 @@ class RedBlackTree
 		RedBlackTree()
 		{
 			// TOCHECK
-			TNULL<Key, T> = new s_tree<Key, T>;
-			TNULL<Key, T>->color = 0;
-			TNULL<Key, T>->left = NULL;
-			TNULL<Key, T>->right = NULL;
-			root = TNULL<Key, T>;
+			TNULL = alloc.allocate(1);
+			TNULL->color = 0;
+			TNULL->left = NULL;
+			TNULL->right = NULL;
+			root = TNULL;
 		}
 		
 		~RedBlackTree()
 		{
 			// TODO
+			
 		}
 
-		s_tree<Key, T>	insert(pair_type const &pair)
+		s_tree<Key, T>	*insert(pair_type const &pair)
 		{
 			// Initializing new node
-			Node	node = new s_tree<Key, T>;
+			Node	node = alloc.allocate(1);
 			
 			node->parent = NULL;
 			node->data = pair;
-			node->left = TNULL<Key, T>;
-			node->right = TNULL<Key, T>;
+			node->left = TNULL;
+			node->right = TNULL;
 			node->color = 1;
 			Node	y = NULL;
 			Node	x = this->root;
 			
-			while (x != TNULL<Key, T>) // Searching the value with comparison
+			while (x != TNULL) // Searching the value with comparison
 			{
 				y = x;
 				if (node->data.first == x->data.first)
@@ -308,25 +307,25 @@ class RedBlackTree
 			if (node->parent == NULL) // If node is the root, then it don't need to be balanced but the root must be black
 			{
 				node->color = 0;
-				return (*node);
+				return (node);
 			}
 			if (node->parent->parent == NULL) // If node is near the root, it don't need to be balanced
-				return (*node);
+				return (node);
 			Node copy = node;
 			this->fix_insert(node);
-			return (*copy);
+			return (copy);
 		}
 
-		void	erase(Key key)
+		bool	erase(Key key)
 		{
 			int		y_color;
 			Node	node = this->root;
 			Node	x;
 			Node	y;
-			Node	z = TNULL<Key, T>;
+			Node	z = TNULL;
 
 			// Looking for the node
-			while (node != TNULL<Key, T>)
+			while (node != TNULL)
 			{
 				if (node->data.first == key)
 					z = node;
@@ -337,18 +336,18 @@ class RedBlackTree
 					node = node->left;
 			}
 			// Return if the key don't exist
-			if (z == TNULL<Key, T>)
-				return ;
+			if (z == TNULL)
+				return (false);
 			
 			// Deleting the node
 			y = z;
 			y_color = y->color;
-			if (z->left == TNULL<Key, T>)
+			if (z->left == TNULL)
 			{
 				x = z->right;
 				rb_transplant(z, z->right);
 			}
-			else if (z->right == TNULL<Key, T>)
+			else if (z->right == TNULL)
 			{
 				x = z->left;
 				rb_transplant(z, z->left);
@@ -374,13 +373,13 @@ class RedBlackTree
 			delete z;
 			if (y_color == 0) // If the node deleted is black, then it need to be fixed
 				fix_erase(x);
-			
+			return (true);
 		}
 
 		// Return the lowest value of the tree
 		Node	minimum(Node node)
 		{
-			while (node->left != TNULL<Key, T>)
+			while (node->left != TNULL)
 				node = node->left;
 			return (node);
 		}
@@ -388,22 +387,20 @@ class RedBlackTree
 		// Return the highest value of the tree
 		Node	maximum(Node node, bool end = false)
 		{
-			while (node->right != TNULL<Key, T>)
+			while (node->right != TNULL)
 				node = node->right;
 			if (end)
-			{
-				Node	node2 = node;
 				node = node->right;
-				node->parent = node2;
-				return (node);
-			}
 			return (node);
 		}
 
 		Node	search(Key const &key) { return (searchEngine(key, this->root)); } // TOCHECK for const
 
-		Node	&getRoot() { return (this->root); }
+		Node	&getRoot() const { return (this->root); }
 
+		size_t	max_size() const { return (this->alloc.max_size()); }
+
+		Node	get_tnull() const { return (this->TNULL); }
 };
 
 #endif

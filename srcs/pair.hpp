@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 10:00:05 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 14:33:57 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/03 18:02:46 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,17 +33,10 @@ namespace ft
 		}
 		
 		// template<class U1, class U2>
-		pair(pair const &other) // TOCHECK use templated pair for other
-		{
-			first = other.first;
-			second = other.second;
-		}
+		pair(pair const &other) : first(other.first), second(other.second)// TOCHECK use templated pair for other
+		{ }
 		
-		pair(first_type const &first, second_type const &second)
-		{
-			this->first = first;
-			this->second = second;
-		}
+		pair(first_type const &first, second_type const &second) : first(first), second(second) { }
 		
 		pair	&operator=(const pair &other)
 		{

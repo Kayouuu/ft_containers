@@ -6,18 +6,15 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/02 13:56:38 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/03 17:53:12 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ITERATORS_HPP
 # define ITERATORS_HPP
 
-#include "ft_containers.hpp"
+// #include "ft_containers.hpp"
 #include "tree.hpp"
-
-template <typename Key, typename T>
-extern s_tree<Key, T>	*TNULL;
 
 namespace ft
 {
@@ -201,7 +198,7 @@ namespace ft
 			// Return the lowest value of the tree
 			s_tree<Key, U>	*minimum(s_tree<Key, U>	*node)
 			{
-				while (node->left != NULL && node->left != TNULL<Key, U>)
+				while (node->left != NULL && node->left != TNULL)
 					node = node->left;
 				return (node);
 			}
@@ -209,7 +206,7 @@ namespace ft
 			// Return the highest value of the tree
 			s_tree<Key, U>	*maximum(s_tree<Key, U>	*node)
 			{
-				while (node->right != TNULL<Key, U> && node->right != NULL)
+				while (node->right != TNULL && node->right != NULL)
 					node = node->right;
 				return (node);
 			}
@@ -222,11 +219,12 @@ namespace ft
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
-			RBTreeIterator(pointer ptr) : _ptr(ptr)  { };
+			RBTreeIterator(pointer ptr, s_tree<Key, U> *tnull, pointer end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
 			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
 			RBTreeIterator	&operator=(RBTreeIterator const &copy)
 			{
 				_ptr = copy._ptr;
+				TNULL = copy.TNULL;
 				return (*this);
 			};
 			operator RBTreeIterator<Key, U, const T, Cont> () const { return (RBTreeIterator<Key, U, const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
@@ -235,8 +233,8 @@ namespace ft
 
 			pointer	base() const { return (this->_ptr->data); }
 			// Operator overload
-			ft::pair<Key, U>		operator*() const { return (_ptr->data); }
-			ft::pair<Key, U>		*operator->() { return &(_ptr->data); }
+			ft::pair<const Key, U>		operator*() const { return (_ptr->data); }
+			ft::pair<const Key, U>		*operator->() { return &(_ptr->data); }
 			RBTreeIterator	&operator++()
 			{
 				_ptr = next_iter(_ptr);
@@ -251,7 +249,9 @@ namespace ft
 			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
 
 		private:
-			pointer	_ptr;
+			pointer			_ptr;
+			pointer			end_node;
+			s_tree<Key, U>	*TNULL;
 
 			bool	is_left_child(s_tree<Key, U> *node)
 			{
@@ -260,7 +260,9 @@ namespace ft
 			
 			pointer	next_iter(s_tree<Key, U> *node)
 			{
-				if (node->right != NULL && node->right != TNULL<Key, U>)
+				if (node == end_node)
+					return (node->right);
+				if (node->right != NULL && node->right != TNULL)
 					return (minimum(node->right));
 				while (!is_left_child(node))
 					node = node->parent;
@@ -269,7 +271,9 @@ namespace ft
 
 			pointer	prev_iter(s_tree<Key, U> *node)
 			{
-				if (node->left != NULL && node->left != TNULL<Key, U>)
+				if (node == TNULL)
+					return (end_node);
+				if (node->left != NULL && node->left != TNULL)
 					return (maximum(node->left));
 				s_tree<Key, U>	*node2 = node;
 				while (is_left_child(node2))

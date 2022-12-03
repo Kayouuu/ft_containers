@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/02 16:06:07 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/03 17:49:57 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,41 +16,61 @@
 #include "ft_containers.hpp"
 #include "iterators.hpp"
 #include "tree.hpp"
+#include <functional>
 
 namespace ft
 {
 	template <
 		class Key,
 		class T,
-		class Compare = std::less<Key>, // TOCHECK if need to code std::less
+		class Compare = std::less<Key>,
 		class Allocator = std::allocator< ft::pair<const Key, T> >
 	>
 	class map
 	{
 		public:
-			typedef Key										key_type;
-			typedef	T										mapped_type;
-			typedef	typename ft::pair< Key, T>				value_type; // TOFIX hould have const Key template parameter 
-			typedef	size_t									size_type;
-			typedef	long int								difference_type;
-			typedef Compare									key_compare;
-			typedef Allocator								allocator_type;
-			typedef value_type&								reference;
-			typedef	const value_type&						const_reference;
-			typedef	typename Allocator::pointer				pointer;
-			typedef typename Allocator::const_pointer		const_pointer;
+			typedef Key													key_type;
+			typedef	T													mapped_type;
+			typedef	typename ft::pair<const Key, T>						value_type;
+			typedef	size_t												size_type;
+			typedef	long int											difference_type;
+			typedef Compare												key_compare;
+			typedef Allocator											allocator_type;
+			typedef value_type&											reference;
+			typedef	const value_type&									const_reference;
+			typedef	typename Allocator::pointer							pointer;
+			typedef typename Allocator::const_pointer					const_pointer;
 			typedef	RBTreeIterator<Key, T, s_tree<Key, T>, map>			iterator;
 			typedef	const RBTreeIterator<Key, T, s_tree<Key, T>, map>	const_iterator;
-			typedef	ft::reverse_iterator<iterator>			reverse_iterator;
-			typedef	ft::reverse_iterator<const_iterator>	const_reverse_iterator;
-
-			class value_compare; // TODO
+			typedef	ft::reverse_iterator<iterator>						reverse_iterator;
+			typedef	ft::reverse_iterator<const_iterator>				const_reverse_iterator;
 		private:
 			// TOCHECK maybe a _capacity var ?
 			RedBlackTree<Key, T>	_tree;
 			size_type				_size;
 			allocator_type			_alloc;
 			
+			class value_compare : std::binary_function<value_type, value_type, bool>
+			{
+				protected:
+					Compare	comp;
+					value_compare(Compare c) : comp(c) { }
+				public:
+					~value_compare();
+					bool	operator()(value_type const &lhs, value_type const &rhs) const { return (comp(lhs.first, rhs.first)); }
+			};
+			
+			ft::pair<iterator, bool>	insert(value_type const &value)
+			{
+				// TOCHECK returned value (seems now good)
+				bool	inserted = false;
+				s_tree<Key, T> *node = _tree.insert(value);
+				iterator it(node, _tree.TNULL, _tree.maximum(_tree.root));
+				this->_size++;
+				if (node)
+					inserted = true;
+				return (ft::pair<iterator, bool>(it, inserted));
+			}
 		public:
 			// Constructor
 			map() // TOCHECK
@@ -86,6 +106,8 @@ namespace ft
 			~map()
 			{
 				// TODO
+				clear();
+				delete _tree.TNULL;
 			}
 
 			// Get_allocator
@@ -117,21 +139,21 @@ namespace ft
 			}
 			
 			// Iterators
-			iterator	begin() { return (iterator(_tree.minimum(_tree.root))); }
+			iterator	begin() { return (iterator(_tree.minimum(_tree.root), _tree.TNULL, _tree.maximum(_tree.root))); }
 
-			const_iterator	begin() const { return (const_iterator(_tree.minimum(_tree.root))); }
+			const_iterator	begin() const { return (const_iterator(_tree.minimum(_tree.root), _tree.TNULL)); }
 
 			iterator	end()
 			{
 				// TODO
-				iterator it(_tree.maximum(_tree.root, true));
+				iterator it(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root));
 				return (it);
 			}
 
 			const_iterator	end() const
 			{
 				// TODO
-				const_iterator it(_tree.maximum(_tree.root, true));
+				const_iterator it(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root));
 				return (it);
 			}
 
@@ -144,35 +166,38 @@ namespace ft
 			bool	empty() const { return (this->_size == 0); }
 			size_type	size() const { return (this->_size); }
 
-			size_type	max_size() const { return (this->_alloc.max_size()); }
+			size_type	max_size() const { return (this->_alloc.max_size() + this->_tree.max_size()); }
 
 			// Modifiers
 			void	clear()
 			{
-				// TODO
+				// TOCHECK
+				iterator	it = this->begin();
+				while (*it != (*this->end()))
+				{
+					this->_tree.erase((*it).first);
+					this->_size--;
+					it = this->begin();
+				}
+			}
+			
+			ft::pair<iterator, bool>	insert(ft::pair<Key, T> const &value)
+			{
+				const Key	k = value.first;
+				T			type = value.second;
+				return (insert(ft::make_pair<const Key, T>(k, type)));
 			}
 
-			ft::pair<iterator, bool>	insert(value_type const &value)
-			{
-				// TOCHECK returned value (seems now good)
-				bool	inserted = false;
-				s_tree<Key, T> node = _tree.insert(value);
-				iterator it(&node);
-				this->_size++;
-				if ((*it))
-					inserted = true;
-				return (ft::pair<iterator, bool>(it, inserted));
-			}
 
 			iterator insert(iterator pos, const value_type& value)
 			{
 				// TOCHECK returned value (seems now good)
 				(void)pos;
 				bool	inserted = false;
-				s_tree<Key, T> node = _tree.insert(value);
-				iterator it(&node);
+				s_tree<Key, T> *node = _tree.insert(value);
+				iterator it(node, _tree.TNULL, _tree.maximum(_tree.root));
 				this->_size++;
-				if ((*it))
+				if (node)
 					inserted = true;
 				return (ft::pair<iterator, bool>(it, inserted));
 			}
@@ -204,7 +229,8 @@ namespace ft
 
 			size_type	erase(Key const &key)
 			{
-				// TODO
+				if (_tree.erase(key))
+					this->size--;
 			}
 			
 			void	swap(map &other)
@@ -217,7 +243,9 @@ namespace ft
 			// Lookup
 			size_type	count(Key const &key) const
 			{
-				// TODO
+				// TOCHECK
+				s_tree<Key, T>	*node = _tree.search(key);
+				return (node == NULL ? 0 : 1); // If nothing is found, return 0, else 1
 			}
 
 			iterator	find(Key const &key)
@@ -249,11 +277,29 @@ namespace ft
 			iterator	lower_bound(Key const &key)
 			{
 				// TODO
+				s_tree<Key, T>	*node = _tree.search(key);
+				if (node == NULL)
+					return (end());
+				s_tree<Key, T>	*node2 = node;
+				if (node->data != (*begin()))
+					node2--;
+				if (node->data.first >= node2->data.first)
+					return (iterator(node2, _tree.TNULL, _tree.maximum(_tree.root)));
+				return (iterator(node, _tree.TNULL, _tree.maximum(_tree.root)));
 			}
 
 			const_iterator	lower_bound(Key const &key) const
 			{
 				// TODO
+				s_tree<Key, T>	*node = _tree.search(key);
+				if (node == NULL)
+					return (end());
+				s_tree<Key, T>	*node2 = node;
+				if (node != begin())
+					node2--;
+				if (node->data.first >= node2->data.first)
+					return (iterator(node2, _tree.TNULL, _tree.maximum(_tree.root)));
+				return (iterator(node, _tree.TNULL, _tree.maximum(_tree.root)));
 			}
 			
 			iterator	upper_bound(Key const &key)
