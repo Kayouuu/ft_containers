@@ -6,28 +6,40 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/03 18:07:22 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/07 16:47:27 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TREE_HPP
 # define TREE_HPP
 
-#include "ft_containers.hpp"
+// #include "ft_containers.hpp"
+#include "map.hpp"
 #include "pair.hpp"
 #include <memory>
 #include <iostream>
 #include <map>
+#include <functional>
 
 template <typename Key, typename T>
 struct	s_tree
 {
-	ft::pair<const Key, T>	data;
+	ft::pair<Key, T>	data;
 	s_tree<Key, T>		*parent;
 	s_tree<Key, T>		*left;
 	s_tree<Key, T>		*right;
 	int					color; // either 0 => black or 1 => red
 };
+
+namespace ft
+{
+	template <
+		class Key,
+		class T,
+		class Compare,
+		class Allocator >
+	class map;
+}
 
 /* *********************************Red-Black Tree Properties********************************* */
 /*																							   */
@@ -43,17 +55,20 @@ struct	s_tree
 /*	*T represent our Red-Black Tree															   */
 /* ******************************************************************************************* */
 
-template <typename Key, typename T>
+template <typename Key, typename T, typename Alloc, typename Comp>
 class RedBlackTree
 {
 	private:
-		typedef s_tree<Key, T>					*Node;
-		typedef	ft::pair<const Key, T>			pair_type;
-		typedef	ft::pair<const Key, const T>	const_pair_type;
+		typedef s_tree<Key, T>												*Node;
+		typedef	ft::pair<Key, T>											pair_type;
+		typedef	ft::pair<const Key, T>										const_pair_type;
+		typedef	typename Alloc::template rebind< s_tree<Key, T> >::other	alloc_type;
+		typedef typename ft::map<Key, T, Comp, Alloc>::value_compare		compare;
 	public:
-		Node					root;
-		Node					TNULL;
-		std::allocator< s_tree<Key, T> >	alloc;
+		Node		root;
+		Node		TNULL;
+		compare		comp;
+		alloc_type	alloc;
 	private:
 		void	left_rotate(Node x)
 		{
@@ -241,22 +256,58 @@ class RedBlackTree
 			node->color = 0;
 		}
 
-
-		Node searchEngine(Key const &key, Node node)
+		Node searchEngine(Key const &key, Node node, Comp compare)
 		{
 			// TODO
 			if (node == TNULL)
 				return (NULL);
 			if (key == node->data.first)
 				return (node);
-			if (key < node->data.first)
-				return (searchEngine(key, node->left));
+			if (compare(key, node->data.first))
+				return (searchEngine(key, node->left, compare));
 			else
-				return (searchEngine(key, node->right));
+				return (searchEngine(key, node->right, compare));
+		}
+
+		Node lower_bound_engine(Key const &key, Comp compare)
+		{
+			Node	current = root;
+			Node	prev = TNULL;
+			// TODO
+			while (current != TNULL)
+			{
+				if (!compare(current->data.first, key))
+				{
+					prev = current;
+					current = current->left;
+				}
+				else
+					current = current->right;
+			}
+			return (prev);
+		}
+
+		Node upper_bound_engine(Key const &key, Comp compare)
+		{
+			Node	current = root;
+			Node	prev = TNULL;
+			// TODO
+			while (current != TNULL)
+			{
+				if (compare(key, current->data.first))
+				{
+					prev = current;
+					current = current->left;
+				}
+				else
+					current = current->right;
+			}
+			
+			return (prev);
 		}
 
 	public:
-		RedBlackTree()
+		RedBlackTree(compare c) : comp(c)
 		{
 			// TOCHECK
 			TNULL = alloc.allocate(1);
@@ -269,7 +320,7 @@ class RedBlackTree
 		~RedBlackTree()
 		{
 			// TODO
-			
+			alloc.deallocate(TNULL, 1);
 		}
 
 		s_tree<Key, T>	*insert(pair_type const &pair)
@@ -290,7 +341,7 @@ class RedBlackTree
 				y = x;
 				if (node->data.first == x->data.first)
 					return (NULL);
-				if (node->data.first < x->data.first)
+				if (comp(node->data, x->data))
 					x = x->left;
 				else
 					x = x->right;
@@ -299,7 +350,7 @@ class RedBlackTree
 			node->parent = y; // Setting the parent
 			if (y == NULL) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
 				root = node;
-			else if (node->data.first < y->data.first) // Setting where our node is supposed to go
+			else if (comp(node->data, y->data)) // Setting where our node is supposed to go
 				y->left = node;
 			else
 				y->right = node;
@@ -330,7 +381,7 @@ class RedBlackTree
 				if (node->data.first == key)
 					z = node;
 				// Key comparison, if < => Go left, if > => Go right
-				if (node->data.first <= key)
+				if (comp(node->data.first, key))
 					node = node->right;
 				else
 					node = node->left;
@@ -377,7 +428,7 @@ class RedBlackTree
 		}
 
 		// Return the lowest value of the tree
-		Node	minimum(Node node)
+		Node	minimum(Node node) const
 		{
 			while (node->left != TNULL)
 				node = node->left;
@@ -385,7 +436,7 @@ class RedBlackTree
 		}
 
 		// Return the highest value of the tree
-		Node	maximum(Node node, bool end = false)
+		Node	maximum(Node node, bool end = false) const
 		{
 			while (node->right != TNULL)
 				node = node->right;
@@ -394,7 +445,10 @@ class RedBlackTree
 			return (node);
 		}
 
-		Node	search(Key const &key) { return (searchEngine(key, this->root)); } // TOCHECK for const
+		Node	search(Key const &key) { Comp compare; return (searchEngine(key, this->root, compare)); } // TOCHECK for const
+
+		Node	lower_bound(Key const &key) { Comp compare; return (lower_bound_engine(key, compare)); }
+		Node	upper_bound(Key const &key) { Comp compare; return (upper_bound_engine(key, compare)); }
 
 		Node	&getRoot() const { return (this->root); }
 

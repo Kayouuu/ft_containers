@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/03 17:53:12 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/07 11:49:04 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,7 +234,7 @@ namespace ft
 			pointer	base() const { return (this->_ptr->data); }
 			// Operator overload
 			ft::pair<const Key, U>		operator*() const { return (_ptr->data); }
-			ft::pair<const Key, U>		*operator->() { return &(_ptr->data); }
+			ft::pair<const Key, U>		*operator->() { return (&_ptr->data); }
 			RBTreeIterator	&operator++()
 			{
 				_ptr = next_iter(_ptr);
