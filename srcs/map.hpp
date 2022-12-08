@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/07 17:03:19 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/08 10:44:58 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,13 @@ namespace ft
 		{
 			// TODO assign comp to value_compare + add InputIt
 			_alloc = alloc;
+			size_type size = std::distance(first, last);
+			this->_size = size;
+			while (first != last)
+			{
+				insert((*first));
+				first++;
+			}
 		}
 
 		map(map const &other) :  _tree(value_compare(other._tree.comp.comp)), _size(other._size), _alloc(other._alloc)
@@ -88,16 +95,13 @@ namespace ft
 			T	tmp_type = (*it).second;
 			value_type	tmp(tmp_key, tmp_type);
 
-			while (1)
+			while (it != it2)
 			{
-				insert(tmp);
-				it++;
-				if (it == it2)
-					break ;
 				tmp_key = (*it).first;
 				tmp_type = (*it).second;
 				value_type	tmp(tmp_key, tmp_type);
-				// tmp = value_type(tmp_key, tmp_type);
+				insert(tmp);
+				it++;
 			}
 		}
 
@@ -116,12 +120,13 @@ namespace ft
 
 			while (it != it2)
 			{
-				_tree.insert(tmp);
-				it++;
 				tmp_key = (*it).first;
 				tmp_type = (*it).second;
-				tmp = value_type(tmp_key, tmp_type);
+				value_type	tmp(tmp_key, tmp_type);
+				insert(tmp);
+				it++;
 			}
+			return (*this);
 		}
 
 		// Destructor
@@ -332,11 +337,7 @@ namespace ft
 		// Observers
 		key_compare key_comp() const { return (_tree.comp.comp); }
 
-		map::value_compare value_comp() const
-		{
-			// TODO
-			return (_tree.comp);
-		}
+		map::value_compare value_comp() const { return (_tree.comp); } // TOCHECK
 	};
 
 	//	TODO Add friend functions (operator==, etc... + )
