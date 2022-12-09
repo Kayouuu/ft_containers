@@ -6,14 +6,14 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:38:09 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 10:50:54 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/09 09:58:34 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EQUAL_HPP
 # define EQUAL_HPP
 
-#include "ft_containers.hpp"
+#include "is_integral.hpp"
 
 namespace ft
 {

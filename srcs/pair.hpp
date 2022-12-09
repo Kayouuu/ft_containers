@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 10:00:05 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/07 11:33:43 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/09 11:41:02 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,7 @@ namespace ft
 		T1	first;
 		T2	second;
 
-		pair()
-		{
-			first = T1();
-			second = T2();
-		}
+		pair() : first(T1()), second(T2()) { }
 		
 		template<class U1, class U2>
 		pair(pair<U1, U2> const &other) : first(other.first), second(other.second)// TOCHECK use templated pair for other

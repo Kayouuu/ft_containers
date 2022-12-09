@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/07 16:47:27 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/09 15:27:49 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,13 +58,13 @@ namespace ft
 template <typename Key, typename T, typename Alloc, typename Comp>
 class RedBlackTree
 {
-	private:
+	public:
 		typedef s_tree<Key, T>												*Node;
 		typedef	ft::pair<Key, T>											pair_type;
 		typedef	ft::pair<const Key, T>										const_pair_type;
 		typedef	typename Alloc::template rebind< s_tree<Key, T> >::other	alloc_type;
 		typedef typename ft::map<Key, T, Comp, Alloc>::value_compare		compare;
-	public:
+
 		Node		root;
 		Node		TNULL;
 		compare		comp;
@@ -89,7 +89,7 @@ class RedBlackTree
 			y->left = x;
 			x->parent = y;
 		}
-
+	
 		void	right_rotate(Node x)
 		{
 			Node	y;
@@ -256,9 +256,8 @@ class RedBlackTree
 			node->color = 0;
 		}
 
-		Node searchEngine(Key const &key, Node node, Comp compare)
+		Node searchEngine(Key const &key, Node node, Comp compare) const
 		{
-			// TODO
 			if (node == TNULL)
 				return (NULL);
 			if (key == node->data.first)
@@ -269,11 +268,11 @@ class RedBlackTree
 				return (searchEngine(key, node->right, compare));
 		}
 
-		Node lower_bound_engine(Key const &key, Comp compare)
+		Node lower_bound_engine(Key const &key, Comp compare) const
 		{
 			Node	current = root;
 			Node	prev = TNULL;
-			// TODO
+
 			while (current != TNULL)
 			{
 				if (!compare(current->data.first, key))
@@ -287,11 +286,11 @@ class RedBlackTree
 			return (prev);
 		}
 
-		Node upper_bound_engine(Key const &key, Comp compare)
+		Node upper_bound_engine(Key const &key, Comp compare) const
 		{
 			Node	current = root;
 			Node	prev = TNULL;
-			// TODO
+
 			while (current != TNULL)
 			{
 				if (compare(key, current->data.first))
@@ -306,68 +305,7 @@ class RedBlackTree
 			return (prev);
 		}
 
-	public:
-		RedBlackTree(compare c) : comp(c)
-		{
-			// TOCHECK
-			TNULL = alloc.allocate(1);
-			TNULL->color = 0;
-			TNULL->left = NULL;
-			TNULL->right = NULL;
-			root = TNULL;
-		}
-		
-		~RedBlackTree()
-		{
-			// TODO
-			alloc.deallocate(TNULL, 1);
-		}
-
-		s_tree<Key, T>	*insert(pair_type const &pair)
-		{
-			// Initializing new node
-			Node	node = alloc.allocate(1);
-			
-			node->parent = NULL;
-			node->data = pair;
-			node->left = TNULL;
-			node->right = TNULL;
-			node->color = 1;
-			Node	y = NULL;
-			Node	x = this->root;
-			
-			while (x != TNULL) // Searching the value with comparison
-			{
-				y = x;
-				if (node->data.first == x->data.first)
-					return (NULL);
-				if (comp(node->data, x->data))
-					x = x->left;
-				else
-					x = x->right;
-			}
-			
-			node->parent = y; // Setting the parent
-			if (y == NULL) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
-				root = node;
-			else if (comp(node->data, y->data)) // Setting where our node is supposed to go
-				y->left = node;
-			else
-				y->right = node;
-			
-			if (node->parent == NULL) // If node is the root, then it don't need to be balanced but the root must be black
-			{
-				node->color = 0;
-				return (node);
-			}
-			if (node->parent->parent == NULL) // If node is near the root, it don't need to be balanced
-				return (node);
-			Node copy = node;
-			this->fix_insert(node);
-			return (copy);
-		}
-
-		bool	erase(Key key)
+		bool	erase_engine(Comp compare, Key key)
 		{
 			int		y_color;
 			Node	node = this->root;
@@ -379,9 +317,12 @@ class RedBlackTree
 			while (node != TNULL)
 			{
 				if (node->data.first == key)
+				{
 					z = node;
+					break ;
+				}
 				// Key comparison, if < => Go left, if > => Go right
-				if (comp(node->data.first, key))
+				if (compare(node->data.first, key))
 					node = node->right;
 				else
 					node = node->left;
@@ -421,15 +362,95 @@ class RedBlackTree
 				y->left->parent = y;
 				y->color = z->color;
 			}
-			delete z;
+			alloc.deallocate(z, 1);
 			if (y_color == 0) // If the node deleted is black, then it need to be fixed
 				fix_erase(x);
 			return (true);
 		}
 
+	public:
+		void	destroy_tree(Node node)
+		{
+			if (node && node != TNULL)
+			{
+				if (node->left && node->left != TNULL)
+					destroy_tree(node->left);
+				if (node->right && node->right != TNULL)
+					destroy_tree(node->right);
+				
+				this->alloc.deallocate(node, 1);
+			}
+		}
+		
+		RedBlackTree(compare c) : comp(c)
+		{
+			TNULL = alloc.allocate(1);
+			TNULL->color = 0;
+			TNULL->left = NULL;
+			TNULL->right = NULL;
+			root = TNULL;
+		}
+		
+		~RedBlackTree()
+		{
+			// if (root != TNULL)
+			// 	alloc.deallocate(root, 1);
+			// alloc.deallocate(TNULL, 1);
+		}
+
+		s_tree<Key, T>	*insert(pair_type const &pair)
+		{
+			// Initializing new node
+			Node	node = alloc.allocate(1);
+			
+			node->parent = NULL;
+			node->data = pair;
+			node->left = TNULL;
+			node->right = TNULL;
+			node->color = 1;
+			Node	y = NULL;
+			Node	x = this->root;
+			
+			while (x != TNULL) // Searching the value with comparison
+			{
+				y = x;
+				if (node->data.first == x->data.first)
+				{
+					alloc.deallocate(node, 1);
+					return (NULL);
+				}
+				if (comp(node->data, x->data))
+					x = x->left;
+				else
+					x = x->right;
+			}
+			
+			node->parent = y; // Setting the parent
+			if (y == NULL) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
+				root = node;
+			else if (comp(node->data, y->data)) // Setting where our node is supposed to go
+				y->left = node;
+			else
+				y->right = node;
+			
+			if (node->parent == NULL) // If node is the root, then it don't need to be balanced but the root must be black
+			{
+				node->color = 0;
+				return (node);
+			}
+			if (node->parent->parent == NULL) // If node is near the root, it don't need to be balanced
+				return (node);
+			Node copy = node;
+			this->fix_insert(node);
+			return (copy);
+		}
+
+
 		// Return the lowest value of the tree
 		Node	minimum(Node node) const
 		{
+			if (root == TNULL || root == NULL)
+				return (TNULL);
 			while (node->left != TNULL)
 				node = node->left;
 			return (node);
@@ -438,6 +459,8 @@ class RedBlackTree
 		// Return the highest value of the tree
 		Node	maximum(Node node, bool end = false) const
 		{
+			if (root == TNULL || root == NULL)
+				return (TNULL);
 			while (node->right != TNULL)
 				node = node->right;
 			if (end)
@@ -445,12 +468,13 @@ class RedBlackTree
 			return (node);
 		}
 
-		Node	search(Key const &key) { Comp compare; return (searchEngine(key, this->root, compare)); } // TOCHECK for const
+		Node	search(Key const &key) const { Comp compare; return (searchEngine(key, this->root, compare)); } // TOCHECK for const
+		bool	erase(Key const &key) { Comp compare; return (erase_engine(compare, key)); }
 
-		Node	lower_bound(Key const &key) { Comp compare; return (lower_bound_engine(key, compare)); }
-		Node	upper_bound(Key const &key) { Comp compare; return (upper_bound_engine(key, compare)); }
+		Node	lower_bound(Key const &key) const { Comp compare; return (lower_bound_engine(key, compare)); }
+		Node	upper_bound(Key const &key) const { Comp compare; return (upper_bound_engine(key, compare)); }
 
-		Node	&getRoot() const { return (this->root); }
+		Node	&getRoot() { return (this->root); }
 
 		size_t	max_size() const { return (this->alloc.max_size()); }
 

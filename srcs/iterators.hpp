@@ -6,14 +6,13 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/08 10:21:22 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/09 17:29:42 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ITERATORS_HPP
 # define ITERATORS_HPP
 
-// #include "ft_containers.hpp"
 #include "tree.hpp"
 
 namespace ft
@@ -191,7 +190,7 @@ namespace ft
 	typename RandomAccessIterator<T, Cont>::difference_type	operator-(RandomAccessIterator<T, Cont> const &lhs, RandomAccessIterator<T2, Cont> const &rhs) { return (lhs.base() - rhs.base()); }
 
 	// TODO
-	template< typename Key, typename U, typename T, typename Cont >
+	template< typename Key, typename U, typename T, typename Cont, typename Tree >
 	class	RBTreeIterator
 	{
 		private:
@@ -211,15 +210,17 @@ namespace ft
 				return (node);
 			}
 		public:
-			typedef typename ft::iterator_traits<T*>::value_type		value_type;
-			typedef	typename ft::iterator_traits<T*>::pointer			pointer;
-			typedef	typename ft::iterator_traits<T*>::reference			reference;
+			typedef typename Tree::pair_type							value_type;
+			typedef typename Tree::pair_type*							pointer;
+			typedef typename Tree::pair_type&							reference;
+			typedef	typename ft::iterator_traits<T*>::pointer			pointer_node;
+			typedef	typename ft::iterator_traits<T*>::reference			reference_node;
 			typedef typename ft::iterator_traits<T*>::difference_type	difference_type;
 			typedef	typename std::bidirectional_iterator_tag			iterator_category;
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
-			RBTreeIterator(pointer ptr, s_tree<Key, U> *tnull, pointer end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
+			RBTreeIterator(pointer_node ptr, s_tree<Key, U> *tnull, pointer_node end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
 			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
 			RBTreeIterator	&operator=(RBTreeIterator const &copy)
 			{
@@ -227,14 +228,14 @@ namespace ft
 				TNULL = copy.TNULL;
 				return (*this);
 			};
-			operator RBTreeIterator<Key, U, const T, Cont> () const { return (RBTreeIterator<Key, U, const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RBTreeIterator<Key, U, const T, Cont, Tree> () const { return (RBTreeIterator<Key, U, const T, Cont, Tree>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
 			// Destructor
 			~RBTreeIterator() { };
 
 			pointer	base() const { return (this->_ptr->data); }
 			// Operator overload
-			ft::pair<const Key, U>		operator*() const { return (_ptr->data); }
-			ft::pair<const Key, U>		*operator->() { return (&_ptr->data); }
+			reference		operator*() const { return (_ptr->data); }
+			pointer			operator->() const { return (&(_ptr->data)); }
 			RBTreeIterator	&operator++()
 			{
 				_ptr = next_iter(_ptr);
@@ -249,43 +250,98 @@ namespace ft
 			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
 
 		private:
-			pointer			_ptr;
-			pointer			end_node;
+			pointer_node	_ptr;
+			pointer_node	end_node;
 			s_tree<Key, U>	*TNULL;
 
 			bool	is_left_child(s_tree<Key, U> *node)
 			{
-				return (node && node->parent && node == node->parent->left);
+				if (node && node->parent && node->parent->left)
+					return (node == node->parent->left);
+				return (false);
 			}
 			
-			pointer	next_iter(s_tree<Key, U> *node)
+			pointer_node	next_iter(s_tree<Key, U> *node)
 			{
-				if (node == end_node)
-					return (node->right);
-				if (node->right != NULL && node->right != TNULL)
-					return (minimum(node->right));
-				while (!is_left_child(node))
-					node = node->parent;
-				return (node->parent);
+				if (node && node->right && node->right != TNULL)
+				{
+					node = node->right;
+					s_tree<Key, U> *cursor = node;
+					if (cursor == TNULL)
+						return (NULL);
+					while (cursor->left && cursor->left != TNULL)
+						cursor = cursor->left;
+					return (cursor);
+				}
+				else
+				{
+					s_tree<Key, U> *p = node->parent;
+					while (p && p != TNULL && node == p->right)
+					{
+						node = p;
+						p = p->parent;
+					}
+					node = p;
+					if (node == NULL)
+						return (TNULL);
+				}
+				return (node);
+				// if (node == end_node)
+				// 	return (node->right);
+				// if (node->right != NULL && node->right != TNULL)
+				// 	return (minimum(node->right));
+				// while (node && node->parent && node->parent->left && !is_left_child(node))
+				// 	node = node->parent;
+				// return (node->parent);
 			}
 
-			pointer	prev_iter(s_tree<Key, U> *node)
+			pointer_node	prev_iter(s_tree<Key, U> *node)
 			{
-				if (node == TNULL)
-					return (end_node);
-				if (node->left != NULL && node->left != TNULL)
-					return (maximum(node->left));
-				s_tree<Key, U>	*node2 = node;
-				while (is_left_child(node2))
-					node2 = node2->parent;
-				return (node2->parent);
+				if (node == TNULL || node == NULL)
+				{
+					// if ( != TNULL)
+						return (end_node);
+					// return (node);
+				}
+				if (node && node->left && node->left != TNULL)
+				{
+					node = node->left;
+					s_tree<Key, U> *cursor = node;
+					if (cursor == NULL || cursor == TNULL)
+						return (NULL);
+					while (cursor->right && cursor->right != TNULL)
+					{
+						cursor = cursor->right;
+					}
+					return (cursor);
+				}
+				else
+				{
+					s_tree<Key, U> *p = node->parent;
+					while (p && p != TNULL && node == p->left)
+					{
+						node = p;
+						p = p->parent;
+					}
+					node = p;
+					if (node == NULL)
+						return (TNULL);
+				}
+				return (node);
+				// if (node->left != NULL && node->left != TNULL)
+				// 	return (maximum(node->left));
+				// s_tree<Key, U>	*node2 = node;
+				// while (is_left_child(node2))
+				// 	node2 = node2->parent;
+				// return (node2->parent);
 			}
 
-			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) 
+			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) // TOCHECK const & non-const ?
 			{
-				if (a._ptr != a.TNULL)
-					return (a._ptr->data == b._ptr->data);
-				return (true);
+				return (a._ptr == b._ptr);
+				// if (a._ptr != a.TNULL)
+				// 	return (a._ptr->data == b._ptr->data);
+				// return (true);
 			}
 			
 			friend bool	operator!=(RBTreeIterator const &a, RBTreeIterator const &b) { return (!(a == b)); }
