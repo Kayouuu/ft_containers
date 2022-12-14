@@ -6,29 +6,27 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 14:44:51 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/14 17:04:13 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TREE_HPP
 # define TREE_HPP
 
-// #include "ft_containers.hpp"
 #include "map.hpp"
 #include "pair.hpp"
 #include <memory>
 #include <iostream>
-#include <map>
 #include <functional>
 
 template <typename Key, typename T>
 struct	s_tree
 {
-	ft::pair<Key, T>	data;
-	s_tree<Key, T>		*parent;
-	s_tree<Key, T>		*left;
-	s_tree<Key, T>		*right;
-	int					color; // either 0 => black or 1 => red
+	ft::pair<const Key, T>	*data;
+	s_tree<Key, T>			*parent;
+	s_tree<Key, T>			*left;
+	s_tree<Key, T>			*right;
+	int						color; // either 0 => black or 1 => red
 };
 
 namespace ft
@@ -60,8 +58,8 @@ class RedBlackTree
 {
 	public:
 		typedef s_tree<Key, T>												*Node;
-		typedef	ft::pair<Key, T>											pair_type;
-		typedef	ft::pair<const Key, T>										const_pair_type;
+		typedef	ft::pair<const Key, T>											*pointer;
+		typedef	ft::pair<const Key, T>											pair_type;
 		typedef	typename Alloc::template rebind< s_tree<Key, T> >::other	alloc_type;
 		typedef typename ft::map<Key, T, Comp, Alloc>::value_compare		compare;
 
@@ -260,9 +258,9 @@ class RedBlackTree
 		{
 			if (node == TNULL)
 				return (NULL);
-			if (key == node->data.first)
+			if (key == node->data->first)
 				return (node);
-			if (compare(key, node->data.first))
+			if (compare(key, node->data->first))
 				return (searchEngine(key, node->left, compare));
 			else
 				return (searchEngine(key, node->right, compare));
@@ -275,7 +273,7 @@ class RedBlackTree
 
 			while (current != TNULL)
 			{
-				if (!compare(current->data.first, key))
+				if (!compare(current->data->first, key))
 				{
 					prev = current;
 					current = current->left;
@@ -293,7 +291,7 @@ class RedBlackTree
 
 			while (current != TNULL)
 			{
-				if (compare(key, current->data.first))
+				if (compare(key, current->data->first))
 				{
 					prev = current;
 					current = current->left;
@@ -316,13 +314,13 @@ class RedBlackTree
 			// Looking for the node
 			while (node != TNULL)
 			{
-				if (node->data.first == key)
+				if (node->data->first == key)
 				{
 					z = node;
 					break ;
 				}
 				// Key comparison, if < => Go left, if > => Go right
-				if (compare(node->data.first, key))
+				if (compare(node->data->first, key))
 					node = node->right;
 				else
 					node = node->left;
@@ -398,13 +396,13 @@ class RedBlackTree
 			// alloc.deallocate(TNULL, 1);
 		}
 
-		s_tree<Key, T>	*insert(pair_type const &pair)
+		s_tree<Key, T>	*insert(pair_type pair)
 		{
 			// Initializing new node
 			Node	node = alloc.allocate(1);
 			
 			node->parent = NULL;
-			node->data = pair;
+			node->data = &pair;
 			node->left = TNULL;
 			node->right = TNULL;
 			node->color = 1;
@@ -414,12 +412,12 @@ class RedBlackTree
 			while (x != TNULL) // Searching the value with comparison
 			{
 				y = x;
-				if (node->data.first == x->data.first)
+				if (node->data->first == x->data->first)
 				{
 					alloc.deallocate(node, 1);
 					return (NULL);
 				}
-				if (comp(node->data, x->data))
+				if (comp(*node->data, *x->data))
 					x = x->left;
 				else
 					x = x->right;
@@ -428,7 +426,7 @@ class RedBlackTree
 			node->parent = y; // Setting the parent
 			if (y == NULL) // If y == NULL, then it means it didn't entered the while loop, therefore our tree is empty
 				root = node;
-			else if (comp(node->data, y->data)) // Setting where our node is supposed to go
+			else if (comp(*node->data, *y->data)) // Setting where our node is supposed to go
 				y->left = node;
 			else
 				y->right = node;
