@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 17:19:45 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/14 14:56:36 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,19 @@ namespace	ft
 				}
 				this->_arr = new_arr;
 				this->_capacity = new_capacity;
+			}
+			
+			void		add_one(const T& value)
+			{
+				if (_capacity == 0)
+				{
+					_capacity = 1;
+					_arr = _alloc.allocate(1);
+				}
+				else if (this->_size == this->_capacity)
+					this->realloc(this->_capacity + 1, false);
+				this->_alloc.construct(this->_arr + this->_size, value);
+				this->_size++;
 			}
 		public:
 			vector() 
@@ -333,7 +346,7 @@ namespace	ft
 				if (pos == this->end())
 				{
 					for (size_t j = 0; j < count; j++)
-						this->push_back(value);
+						this->add_one(value);
 					return (this->begin());
 				}
 				if (this->_size == this->_capacity && this->_capacity + count <= this->_capacity * 2)
@@ -371,8 +384,8 @@ namespace	ft
 			{
 				iterator	it = this->begin();
 				InputIt	copy = first;
+				size_type	new_capacity = this->_capacity;
 				int			right_pos;
-				int			new_capacity = this->_capacity;
 				int			new_size = 0;
 
 				while (copy != last)
@@ -381,11 +394,10 @@ namespace	ft
 					copy++;
 				}
 				int i = 0;
-				if (new_capacity <= (int)this->_capacity * 2)
+				if (new_capacity <= this->_capacity * 2 && _size == _capacity)
 					new_capacity = this->_capacity * 2;
 				
 				T	*new_arr = this->_alloc.allocate(new_capacity);
-
 				while (it != pos)
 				{
 					new_arr[i] = *it;

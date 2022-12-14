@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/01 10:44:24 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 17:29:15 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/14 14:16:25 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -597,6 +597,9 @@ bool	erase1_test(std::ofstream &std_output, std::ofstream &ft_output)
     std_output << *(v1.insert(v1.begin(), 5, 2)) << std::endl;
     ft_output << *(v2.insert(v2.begin(), 5, 2)) << std::endl;
 
+    std_output << "size: " << v1.size() << " ; capacity: " << v1.capacity() << std::endl;
+    ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
+
     std_output << *(v1.insert(v1.begin() + 2, v1.begin(), v1.end())) << std::endl;
     ft_output << *(v2.insert(v2.begin() + 2, v2.begin(), v2.end())) << std::endl;
 
@@ -658,7 +661,6 @@ bool	erase2_test(std::ofstream &std_output, std::ofstream &ft_output)
 
 	std_output << *(v1.erase(v1.begin() + 2)) << std::endl;
 	ft_output << *(v2.erase(v2.begin() + 2)) << std::endl;
-
 	std_output << "size: " << v1.size() << " ; capacity: " << v1.capacity() << std::endl;
 	ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
 
@@ -684,15 +686,6 @@ bool	erase2_test(std::ofstream &std_output, std::ofstream &ft_output)
 	std_output << *(v1.insert(v1.begin(), 5, 2)) << std::endl;
 	ft_output << *(v2.insert(v2.begin(), 5, 2)) << std::endl;
 
-	std_output << *(v1.insert(v1.begin() + 2, v1.begin(), v1.end())) << std::endl;
-	ft_output << *(v2.insert(v2.begin() + 2, v2.begin(), v2.end())) << std::endl;
-
-	std_output << "size: " << v1.size() << " ; capacity: " << v1.capacity() << std::endl;
-	ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
-
-	std_output << *(v1.insert(v1.begin(), v1.begin() + 1, v1.end())) << std::endl;
-	ft_output << *(v2.insert(v2.begin(), v2.begin() + 1, v2.end())) << std::endl;
-	
 	std_output << "size: " << v1.size() << " ; capacity: " << v1.capacity() << std::endl;
 	ft_output << "size: " << v2.size() << " ; capacity: " << v2.capacity() << std::endl;
 
