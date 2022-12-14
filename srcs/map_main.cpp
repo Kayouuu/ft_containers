@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   vector_main.cpp                                    :+:      :+:    :+:   */
+/*   map_main.cpp                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/11/01 10:44:24 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 17:29:15 by psaulnie         ###   ########.fr       */
+/*   Created: 2022/12/12 14:52:41 by psaulnie          #+#    #+#             */
+/*   Updated: 2022/12/12 14:53:22 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #include <vector>
 #include <iomanip>
 
-#include "vector.hpp"
+#include "map.hpp"
 
 #include <fstream>
 #include <ostream>
@@ -53,6 +53,7 @@ bool diff()
 						std::istreambuf_iterator<char>(ft_output.rdbuf())))
 		return (true);
 	return (false);
+		
 }
 
 bool	assign1_test(std::ofstream &std_output, std::ofstream &ft_output)
@@ -89,7 +90,6 @@ bool	assign1_test(std::ofstream &std_output, std::ofstream &ft_output)
 		v1.pop_back();
 	}
 	ft_output << "Content is :" << std::endl;
-	v1.end();
 	for (; v2.begin() != v2.end(); )
 	{
 		ft_output << "- " << *(v2.end() - 1) << std::endl;
@@ -146,6 +146,7 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 	v3.assign(5, 5);
 	v4.assign(5, 5);
 	
+
 	v1.assign(v3.begin(), v3.end());
 	v2.assign(v4.begin(), v4.end());
 	std_output << "Content is :" << std::endl;
@@ -197,7 +198,7 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 
 	try
 	{
-		v1.assign(v3.rbegin(), v3.rend());
+		v1.assign(v3.rend(), v3.rbegin());
 	}
 	catch(const std::exception& e)
 	{
@@ -206,7 +207,7 @@ bool	assign2_test(std::ofstream &std_output, std::ofstream &ft_output)
 
 	try
 	{
-		v2.assign(v4.rbegin(), v4.rend());
+		v2.assign(v4.rend(), v4.rbegin());
 	}
 	catch(const std::exception& e)
 	{
@@ -248,6 +249,7 @@ bool	at_test(std::ofstream &std_output, std::ofstream &ft_output)
 	v2.push_back(5);
 	v1.push_back(6);
 	v2.push_back(6);
+
 
 	std_output << v1.at(3) << std::endl;
 	ft_output << v2.at(3) << std::endl;
@@ -924,66 +926,36 @@ int	main()
 
 	// Assign
 	write_result("Assign", assign1_test(std_input, ft_input), std_input, ft_input);
-		std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Assign Iterator
 	write_result("Assign iterator", assign2_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// At
 	write_result("At", at_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Empty / Size / Max_Size / Capacity
 	write_result("Empty / Size / Max_Size / Capacity", capacity_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Reserve
 	write_result("Reserve", reserve_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Resize
 	write_result("Resize", resize_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Clear
 	write_result("Clear", clear_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// 	Insert with position
 	write_result("Insert with position", insert1_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Insert multiple with position
 	write_result("Insert multiple with position", insert2_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Insert range
 	write_result("Insert range", insert3_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Erase 1
 	write_result("Erase", erase1_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Erase 2
 	write_result("Erase range", erase2_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Push_back
 	write_result("Push_back", push_back_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Pop_back
 	write_result("Pop_back", pop_back_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	// Swap 
 	write_result("Swap", swap_test(std_input, ft_input), std_input, ft_input);
-	std_input.open("std_output.log");
-	ft_input.open("ft_output.log");
 	/* ---------------------------------------------- */
-	
+
 	remove("ft_output.log");
 	remove("std_output.log");
 }

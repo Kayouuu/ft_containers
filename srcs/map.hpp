@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/09 17:25:29 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/12 14:28:35 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 // #include "ft_containers.hpp"
 #include "tree.hpp"
 #include "iterators.hpp"
+#include "tree_iterator.hpp"
 #include "comparison.hpp"
 #include <functional>
 
@@ -179,22 +180,20 @@ namespace ft
 
 		iterator end()
 		{
-			// TODO
 			iterator it(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root));
 			return (it);
 		}
 
 		const_iterator end() const
 		{
-			// TODO
 			const_iterator it(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root));
 			return (it);
 		}
 
-		reverse_iterator rbegin() { reverse_iterator tmp(end()); tmp++; return (tmp); }
-		const_reverse_iterator rbegin() const { return (const_reverse_iterator(end())); }
-		reverse_iterator rend() { return (reverse_iterator(begin())); }
-		const_reverse_iterator rend() const { return (const_reverse_iterator(begin())); }
+		reverse_iterator rbegin() { return (reverse_iterator(iterator(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root)))); }
+		const_reverse_iterator rbegin() const { return (const_reverse_iterator(iterator(_tree.maximum(_tree.root, true), _tree.TNULL, _tree.maximum(_tree.root)))); }
+		reverse_iterator rend() { return (reverse_iterator(iterator(_tree.minimum(_tree.root), _tree.TNULL, _tree.maximum(_tree.root)))); }
+		const_reverse_iterator rend() const { return (const_reverse_iterator(iterator(_tree.minimum(_tree.root), _tree.TNULL, _tree.maximum(_tree.root)))); }
 
 		// Capacity
 		bool empty() const { return (this->_size == 0); }

@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/11/29 10:41:22 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/12 17:19:45 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,9 @@ namespace	ft
 				// if (_capacity == 0 && new_capacity )
 				// 	new_capacity = 1;
 				if (new_capacity <= this->_capacity * 2 && n)
+				{
 					new_capacity = this->_capacity * 2;
+				}
 				if (_capacity > new_capacity)
 					new_capacity = _capacity;
 				T	*new_arr = this->_alloc.allocate(new_capacity);
@@ -164,9 +166,12 @@ namespace	ft
 			template<class InputIt>
 			void assign(InputIt first, typename ft::enable_if< !ft::is_integral< InputIt >::value, InputIt>::type last)
 			{
-				int	i = std::distance(first, last);
+				difference_type	i = std::abs(std::distance(first, last));
+				if (i == 0)
+					return ;
+				// if (i == 0)
+				// 	i++;
 				int	j = 0;
-
 				if (this->_capacity > 0 && this->_arr != NULL)
 				{
 					this->_alloc.deallocate(this->_arr, this->_capacity);
@@ -316,7 +321,7 @@ namespace	ft
 
 			iterator	insert(const_iterator pos, size_type count, const T& value)
 			{
-				vector<T, Allocator>::iterator it = this->begin();
+				iterator it = this->begin();
 				int	right_pos;
 				int	new_capacity;
 				int i = 0;
@@ -475,6 +480,11 @@ namespace	ft
 			{
 				if (count > this->max_size())
 					throw std::length_error("vector");
+				if (_size < count && count < _capacity)
+				{
+					for (size_type i = _size; i < count; i++)
+						push_back(value);
+				}
 				if (this->_size > count)
 				{
 					this->realloc(count, false);
