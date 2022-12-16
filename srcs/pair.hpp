@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 10:00:05 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/09 11:41:02 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 11:00:45 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,8 +34,10 @@ namespace ft
 		
 		pair(first_type const &first, second_type const &second) : first(first), second(second) { }
 	
-		pair	&operator=(const pair<T1, T2> &other)
+		pair const	&operator=(const pair &other)
 		{
+			if (this == &other)
+				return (*this);
 			this->first = other.first;
 			this->second = other.second;
 			return (*this);

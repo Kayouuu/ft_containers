@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 14:44:51 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 11:00:55 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@
 template <typename Key, typename T>
 struct	s_tree
 {
-	ft::pair<Key, T>	data;
-	s_tree<Key, T>		*parent;
-	s_tree<Key, T>		*left;
-	s_tree<Key, T>		*right;
-	int					color; // either 0 => black or 1 => red
+	ft::pair<const Key, T>	data;
+	s_tree<Key, T>			*parent;
+	s_tree<Key, T>			*left;
+	s_tree<Key, T>			*right;
+	int						color; // either 0 => black or 1 => red
 };
 
 namespace ft
@@ -60,15 +60,16 @@ class RedBlackTree
 {
 	public:
 		typedef s_tree<Key, T>												*Node;
-		typedef	ft::pair<Key, T>											pair_type;
+		typedef	ft::pair<const Key, T>											pair_type;
 		typedef	ft::pair<const Key, T>										const_pair_type;
 		typedef	typename Alloc::template rebind< s_tree<Key, T> >::other	alloc_type;
 		typedef typename ft::map<Key, T, Comp, Alloc>::value_compare		compare;
 
-		Node		root;
-		Node		TNULL;
-		compare		comp;
-		alloc_type	alloc;
+		Node						root;
+		Node						TNULL;
+		compare						comp;
+		alloc_type					alloc;
+		std::allocator<pair_type>	alloc_pair;
 	private:
 		void	left_rotate(Node x)
 		{
@@ -404,7 +405,7 @@ class RedBlackTree
 			Node	node = alloc.allocate(1);
 			
 			node->parent = NULL;
-			node->data = pair;
+			this->alloc_pair.construct(&node->data, pair);
 			node->left = TNULL;
 			node->right = TNULL;
 			node->color = 1;

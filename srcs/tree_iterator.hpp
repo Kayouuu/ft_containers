@@ -6,22 +6,23 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 13:38:52 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/12 14:29:13 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 11:01:05 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #pragma once
 
+#include "pair.hpp"
 #include "tree.hpp"
 
 namespace ft
 {
-	template< typename Key, typename U, typename T, typename Cont, typename Tree>
+	template< typename Key, typename Value, typename T, typename Pair, typename Tree>
 	class	RBTreeIterator
 	{
 		private:
 			// Return the lowest value of the tree
-			s_tree<Key, U>	*minimum(s_tree<Key, U>	*node)
+			T	*minimum(T	*node)
 			{
 				while (node->left != NULL && node->left != TNULL)
 					node = node->left;
@@ -29,28 +30,33 @@ namespace ft
 			}
 
 			// Return the highest value of the tree
-			s_tree<Key, U>	*maximum(s_tree<Key, U>	*node)
+			T	*maximum(T	*node)
 			{
 				while (node->right != TNULL && node->right != NULL)
 					node = node->right;
 				return (node);
 			}
 		public:
-			typedef typename Tree::pair_type							value_type;
-			typedef typename Tree::pair_type*							pointer;
-			typedef typename Tree::pair_type&							reference;
+			typedef T                                            		iterator_type;
+			typedef Pair                                          		value_type;
+			typedef ptrdiff_t                                       	difference_type;
+			typedef Pair&                                           	reference;
+			typedef const Pair&                                     	const_reference;
+			typedef Pair*                                           	pointer;
+			typedef const Pair*                                     	const_pointer;
 			typedef	typename ft::iterator_traits<T*>::pointer			pointer_node;
 			typedef	typename ft::iterator_traits<T*>::reference			reference_node;
-			typedef typename ft::iterator_traits<T*>::difference_type	difference_type;
 			typedef	typename std::bidirectional_iterator_tag			iterator_category;
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
-			RBTreeIterator(pointer_node ptr, s_tree<Key, U> *tnull, pointer_node end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
+			RBTreeIterator(pointer_node ptr, T *tnull, pointer_node end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
 			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
 
-			template <class Key2, class U2, class Iter>
-			RBTreeIterator(RBTreeIterator<Key2, U2, Iter, typename ft::enable_if<ft::is_same<Iter, typename Cont::pointer>::value, Cont >::type, Tree> const &copy) { *this = copy; }
+			template<class U, class Z>
+			RBTreeIterator(const RBTreeIterator<Key, Value, U, Z, Tree>& other, typename ft::enable_if<std::is_convertible<U, T>::value>::type* = 0) : _ptr(other.node()), end_node(other.end_node), TNULL(other.TNULL) { };
+			// template <class Iter>
+			// RBTreeIterator(RBTreeIterator<Pair, Iter, typename ft::enable_if<ft::is_same<Iter, typename Tree::pointer>::value >::type> const &copy) { *this = copy; }
 			
 			RBTreeIterator	&operator=(RBTreeIterator const &copy)
 			{
@@ -59,14 +65,15 @@ namespace ft
 				TNULL = copy.TNULL;
 				return (*this);
 			};
-			operator RBTreeIterator<Key, U, const T, Cont, Tree> () const { return (RBTreeIterator<Key, U, const T, Cont, Tree>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RBTreeIterator<Key, Value, Pair, const T, Tree> () const { return (RBTreeIterator<Key, Value, Pair, const T, Tree>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
 			// Destructor
 			~RBTreeIterator() { };
 
-			pointer	base() const { return (this->_ptr->data); }
+			ft::pair<const Key, Value>	*base() const { return (this->_ptr->data); }
+			pointer_node			 node() const { return (this->_ptr); }
 			// Operator overload
-			reference		operator*() const { return (_ptr->data); }
-			pointer			operator->() const { return (&(_ptr->data)); }
+			ft::pair<const Key, Value>	&operator*() const { return ((_ptr->data)); }
+			ft::pair<const Key, Value>	*operator->() const { return (&_ptr->data); }
 			RBTreeIterator	&operator++()
 			{
 				_ptr = next_iter(_ptr);
@@ -81,23 +88,23 @@ namespace ft
 			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
 
 		private:
-			pointer_node	_ptr;
-			pointer_node	end_node;
-			s_tree<Key, U>	*TNULL;
+			pointer_node				_ptr;
+			pointer_node				end_node;
+			T	*TNULL;
 
-			bool	is_left_child(s_tree<Key, U> *node)
-			{
-				if (node && node->parent && node->parent->left)
-					return (node == node->parent->left);
-				return (false);
-			}
+			// bool	is_left_child(T *node)
+			// {
+			// 	if (node && node->parent && node->parent->left)
+			// 		return (node == node->parent->left);
+			// 	return (false);
+			// }
 			
-			pointer_node	next_iter(s_tree<Key, U> *node)
+			pointer_node	next_iter(T *node)
 			{
 				if (node && node->right && node->right != TNULL)
 				{
 					node = node->right;
-					s_tree<Key, U> *cursor = node;
+					T *cursor = node;
 					if (cursor == TNULL)
 						return (NULL);
 					while (cursor->left && cursor->left != TNULL)
@@ -106,7 +113,7 @@ namespace ft
 				}
 				else
 				{
-					s_tree<Key, U> *p = node->parent;
+					T *p = node->parent;
 					while (p && p != TNULL && node == p->right)
 					{
 						node = p;
@@ -126,14 +133,14 @@ namespace ft
 				// return (node->parent);
 			}
 
-			pointer_node	prev_iter(s_tree<Key, U> *node)
+			pointer_node	prev_iter(T *node)
 			{
 				if (node == TNULL || node == NULL)
 						return (end_node);
 				if (node && node->left && node->left != TNULL)
 				{
 					node = node->left;
-					s_tree<Key, U> *cursor = node;
+					T *cursor = node;
 					if (cursor == NULL || cursor == TNULL)
 						return (NULL); 
 					while (cursor->right && cursor->right != TNULL)
@@ -144,7 +151,7 @@ namespace ft
 				}
 				else
 				{
-					s_tree<Key, U> *p = node->parent;
+					T *p = node->parent;
 					while (p && p != TNULL && node == p->left)
 					{
 						node = p;
@@ -157,21 +164,19 @@ namespace ft
 				return (node);
 				// if (node->left != NULL && node->left != TNULL)
 				// 	return (maximum(node->left));
-				// s_tree<Key, U>	*node2 = node;
+				// T	*node2 = node;
 				// while (is_left_child(node2))
 				// 	node2 = node2->parent;
 				// return (node2->parent);
 			}
 
-			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) // TOCHECK const & non-const ?
-			{
-				return (a._ptr == b._ptr);
-				// if (a._ptr != a.TNULL)
-				// 	return (a._ptr->data == b._ptr->data);
-				// return (true);
-			}
+			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) { return (a._ptr == b._ptr); }
+			template <class T2>
+			friend bool	operator==(RBTreeIterator<Key, Value, T, Pair, Tree> const &a, RBTreeIterator<Key, Value, T2, Pair, Tree> const &b) { return (a == b); }
 			
 			friend bool	operator!=(RBTreeIterator const &a, RBTreeIterator const &b) { return (!(a == b)); }
+			template <class T2>
+			friend bool	operator!=(RBTreeIterator<Key, Value, T, Pair, Tree> const &a, RBTreeIterator<Key, Value, T2, Pair, Tree> const &b) { return (!(a == b)); }
 	};
 
 	// template <class Key, class U, class T, typename Cont>
