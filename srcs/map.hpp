@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 16:21:45 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:17:48 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,8 +78,8 @@ namespace ft
 		{
 			// TODO assign comp to value_compare + add InputIt
 			_alloc = alloc;
-			size_type size = std::distance(first, last);
-			this->_size = size;
+			// size_type size = std::distance(first, last);
+			// this->_size = size;
 			while (first != last)
 			{
 				insert((*first));
@@ -111,24 +111,8 @@ namespace ft
 		map &operator=(map const &other)
 		{
 			_alloc = other._alloc;
-			// _size = other._size;
 			_tree = RedBlackTree<Key, T, Allocator, Compare>(other._tree.comp.comp);
-
-			// iterator	it = other.begin();
-			// iterator	it2 = other.end();
-
-			// Key	tmp_key = (*it).first;
-			// T	tmp_type = (*it).second;
-			// value_type	tmp(tmp_key, tmp_type);
-
-			// while (it != it2)
-			// {
-			// 	tmp_key = (*it).first;
-			// 	tmp_type = (*it).second;
-			// 	value_type	tmp(tmp_key, tmp_type);
-			// 	insert(tmp);
-			// 	it++;
-			// }
+			_size = 0;
 			insert(other.begin(), other.end());
 			return (*this);
 		}
@@ -136,15 +120,7 @@ namespace ft
 		// Destructor
 		~map()
 		{
-			// // TOCHECK
 			_tree.destroy_tree(_tree.getRoot());
-			
-			// while (_size != 0 && begin() != end())
-			// {
-			// 	std::cout << (begin() == end()) << std::endl;
-			// 	this->erase(begin()->first);
-			// }
-			// erase((*begin()).first);
 		}
 
 		// Get_allocator
@@ -171,7 +147,10 @@ namespace ft
 			// TOCHECK
 			s_tree<Key, T> *tmp = _tree.search(key);
 			if (tmp == NULL)
+			{
+				_size++;
 				return (_tree.insert(ft::make_pair<Key, T>(key, T()))->data.second);
+			}
 			return (tmp->data.second);
 		}
 
@@ -221,12 +200,15 @@ namespace ft
 			// TOCHECK returned value (seems now good)
 			bool inserted = false;
 			s_tree<Key, T> *node = _tree.insert(ft::make_pair<Key, T>(value.first, value.second));
-			iterator it(node, _tree.TNULL, _tree.maximum(_tree.root));
+			iterator it;
 			if (node)
 			{
+				it = iterator(node, _tree.TNULL, _tree.maximum(_tree.root));
 				this->_size++;
 				inserted = true;
 			}
+			else
+				it = lower_bound(value.first);
 			return (ft::pair<iterator, bool>(it, inserted));
 		}
 

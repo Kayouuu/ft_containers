@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 13:38:52 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 16:28:13 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:03:09 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,13 +71,13 @@ namespace ft
 	
 			RBTreeIterator	&operator++()
 			{
-				next_iter();
+				_ptr = next_iter(_ptr);
 				return (*this);
 			}
 			RBTreeIterator	operator++(int) { RBTreeIterator tmp = *this; ++(*this); return (tmp); }
 			RBTreeIterator	&operator--()
 			{
-				prev_iter();
+				_ptr = prev_iter(_ptr);
 				return (*this);
 			}
 			RBTreeIterator	operator--(int) { RBTreeIterator tmp = *this; --(*this); return (tmp); }
@@ -94,34 +94,31 @@ namespace ft
 			// 	return (false);
 			// }
 			
-			void	next_iter()
+			pointer_node	next_iter(Node *node)
 			{
-
-				if (_ptr && _ptr->right && _ptr->right != TNULL)
+				if (node && node->right && node->right != TNULL)
 				{
-					_ptr = _ptr->right;
-					Node *cursor = _ptr;
+					node = node->right;
+					Node *cursor = node;
 					if (cursor == TNULL)
-					{
-						_ptr = NULL;
-						return ;
-					}
+						return (NULL);
 					while (cursor->left && cursor->left != TNULL)
 						cursor = cursor->left;
-					_ptr = cursor;
+					return (cursor);
 				}
 				else
 				{
-					Node *p = _ptr->parent;
-					while (p && p != TNULL && _ptr == p->right)
+					Node *p = node->parent;
+					while (p && p != TNULL && node == p->right)
 					{
-						_ptr = p;
+						node = p;
 						p = p->parent;
 					}
-					_ptr = p;
-					if (_ptr == NULL)
-						_ptr = TNULL;
+					node = p;
+					if (node == NULL)
+						return (TNULL);
 				}
+				return (node);
 				// if (node == end_node)
 				// 	return (node->right);
 				// if (node->right != NULL && node->right != TNULL)
@@ -131,43 +128,35 @@ namespace ft
 				// return (node->parent);
 			}
 
-			void	prev_iter()
+			pointer_node	prev_iter(Node *node)
 			{
-				if (_ptr == TNULL || _ptr == NULL)
+				if (node == TNULL || node == NULL)
+						return (end_node);
+				if (node && node->left && node->left != TNULL)
 				{
-					_ptr = end_node;
-					return ;
-				}
-				if (_ptr && _ptr->left && _ptr->left != TNULL)
-				{
-					_ptr = _ptr->left;
-					Node *cursor = _ptr;
+					node = node->left;
+					Node *cursor = node;
 					if (cursor == NULL || cursor == TNULL)
-					{
-						_ptr = NULL;
-						return ;
-					}
+						return (NULL); 
 					while (cursor->right && cursor->right != TNULL)
 					{
 						cursor = cursor->right;
 					}
-					_ptr = cursor;
+					return (cursor);
 				}
 				else
 				{
-					Node *p = _ptr->parent;
-					while (p && p != TNULL && _ptr == p->left)
+					Node *p = node->parent;
+					while (p && p != TNULL && node == p->left)
 					{
-						_ptr = p;
+						node = p;
 						p = p->parent;
 					}
-					_ptr = p;
-					if (_ptr == NULL)
-					{
-						_ptr = TNULL;
-						return ;
-					}
+					node = p;
+					if (node == NULL)
+						return (TNULL);
 				}
+				return (node);
 				// if (node->left != NULL && node->left != TNULL)
 				// 	return (maximum(node->left));
 				// T	*node2 = node;
@@ -175,6 +164,7 @@ namespace ft
 				// 	node2 = node2->parent;
 				// return (node2->parent);
 			}
+
 
 			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) { return (a._ptr == b._ptr); }
 			template <class T2>

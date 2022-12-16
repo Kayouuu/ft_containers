@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 15:49:39 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:13:02 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,10 +75,9 @@ class RedBlackTree
 		void	left_rotate(Node x)
 		{
 			Node	y;
-
 			y = x->right;
 			x->right = y->left; // exchanging sub-trees
-			if (y->left != TNULL) // if y is the root
+			if (y && y->left && y->left != TNULL) // if y is the root
 				y->left->parent = x;
 			y->parent = x->parent; // y new parent become x parent
 			if (x->parent == NULL) // if x is the root, then y become the new root
@@ -98,7 +97,7 @@ class RedBlackTree
 
 			y = x->left;
 			x->left = y->right;
-			if (y->right != TNULL)
+			if (y && y->right != TNULL)
 				y->right->parent = x;
 			y->parent = x->parent;
 			if (x->parent == NULL)
@@ -190,7 +189,6 @@ class RedBlackTree
 		{
 			// TODO	
 			Node	s;
-			
 			while (node != root && node->color == 0)
 			{
 				if (node == node->parent->left)
@@ -202,14 +200,14 @@ class RedBlackTree
 						node->parent->color = 1;
 						left_rotate(node->parent);
 					}
-					if (s->left->color == 0 && s->right->color == 0) // Makes a node black
+					if (s->left && s->right && s->left->color == 0 && s->right->color == 0) // Makes a node black
 					{
 						s->color = 1;
 						node = node->parent;
 					}
 					else
 					{
-						if (s->right->color == 0)
+						if (s->right && s->right->color == 0)
 						{
 							s->left->color = 0;
 							s->color = 1;
@@ -218,7 +216,8 @@ class RedBlackTree
 						}
 						s->color = node->parent->color;
 						node->parent->color = 0;
-						s->right->color = 0;
+						if (s->right)
+							s->right->color = 0;
 						left_rotate(node->parent);
 						node = root;
 					}
