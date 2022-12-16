@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/27 10:20:42 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/14 15:03:29 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/12 14:49:13 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 # define STACK_HPP
 
 #include "vector.hpp"
+#include "ft_containers.hpp"
 
 namespace	ft
 {

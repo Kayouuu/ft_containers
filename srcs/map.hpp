@@ -6,17 +6,17 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/14 16:55:04 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 14:43:54 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_HPP
 #define MAP_HPP
 
-#include "is_integral.hpp"
-#include "tree_iterator.hpp"
+// #include "ft_containers.hpp"
 #include "tree.hpp"
-#include "pair.hpp"
+#include "iterators.hpp"
+#include "tree_iterator.hpp"
 #include "comparison.hpp"
 #include <functional>
 
@@ -30,21 +30,21 @@ namespace ft
 	class map
 	{
 	public:
-		typedef Key 																								key_type;
-		typedef T 																									mapped_type;
-		typedef typename ft::pair<const Key, T> 																	value_type;
-		typedef size_t 																								size_type;
-		typedef long int 																							difference_type;
-		typedef Compare 																							key_compare;
-		typedef Allocator 																							allocator_type;
-		typedef value_type 																							&reference;
-		typedef const value_type 																					&const_reference;
-		typedef typename Allocator::pointer 																		pointer;
-		typedef typename Allocator::const_pointer 																	const_pointer;
-		typedef RBTreeIterator<value_type, s_tree<Key, T>, RedBlackTree<Key, T, Allocator, Compare> > 			iterator;
-		typedef RBTreeIterator<const value_type, s_tree<Key, T>, RedBlackTree<Key, T, Allocator, Compare> >	const_iterator;
-		typedef ft::reverse_iterator<iterator> 																		reverse_iterator;
-		typedef ft::reverse_iterator<const_iterator> 																const_reverse_iterator;
+		typedef Key 																												key_type;
+		typedef T 																													mapped_type;
+		typedef typename ft::pair<const Key, T> 																					value_type;
+		typedef size_t 																												size_type;
+		typedef long int 																											difference_type;
+		typedef Compare 																											key_compare;
+		typedef Allocator 																											allocator_type;
+		typedef value_type 																											&reference;
+		typedef const value_type 																									&const_reference;
+		typedef typename Allocator::pointer 																						pointer;
+		typedef typename Allocator::const_pointer 																					const_pointer;
+		typedef RBTreeIterator<Key, T, s_tree<Key, T> *, ft::pair<const Key, T>, RedBlackTree<Key, T, Allocator, Compare> >			iterator;
+		typedef RBTreeIterator<Key, T, const s_tree<Key, T> *, ft::pair<const Key, T>, RedBlackTree<Key, T, Allocator, Compare> >	const_iterator;
+		typedef ft::reverse_iterator<iterator> 																						reverse_iterator;
+		typedef ft::reverse_iterator<const_iterator> 																				const_reverse_iterator;
 
 		class value_compare : std::binary_function<value_type, value_type, bool>
 		{
@@ -90,46 +90,46 @@ namespace ft
 		map(map const &other) :  _tree(value_compare(other._tree.comp.comp)), _alloc(other._alloc)
 		{
 			// TOCHECK
-			iterator	it = other.begin();
-			iterator	it2 = other.end();
+			// iterator	it = other.begin();
+			// iterator	it2 = other.end();
 
-			Key	tmp_key = (*it).first;
-			T	tmp_type = (*it).second;
-			value_type	tmp(tmp_key, tmp_type);
+			// Key	tmp_key = (*it).first;
+			// T	tmp_type = (*it).second;
+			// value_type	tmp(tmp_key, tmp_type);
 
-			while (it != it2)
-			{
-				tmp_key = (*it).first;
-				tmp_type = (*it).second;
-				value_type	tmp(tmp_key, tmp_type);
-				insert(tmp);
-				it++;
-			}
+			// while (it != it2)
+			// {
+			// 	tmp_key = (*it).first;
+			// 	tmp_type = (*it).second;
+			// 	value_type	tmp(tmp_key, tmp_type);
+			// 	insert(tmp);
+			// 	it++;
+			// }
+			insert(other.begin(), other.end());
 		}
 
 		map &operator=(map const &other)
 		{
 			_alloc = other._alloc;
-			_size = other._size;
+			// _size = other._size;
 			_tree = RedBlackTree<Key, T, Allocator, Compare>(other._tree.comp.comp);
 
-			const_iterator	it = other.begin();
-			const_iterator	it2 = other.end();
+			// iterator	it = other.begin();
+			// iterator	it2 = other.end();
 
-			Key	tmp_key = (*it).first;
-			T	tmp_type = (*it).second;
-			value_type	tmp(tmp_key, tmp_type);
+			// Key	tmp_key = (*it).first;
+			// T	tmp_type = (*it).second;
+			// value_type	tmp(tmp_key, tmp_type);
 
-			while (it != it2)
-			{
-				tmp_key = (*it).first;
-				tmp_type = (*it).second;
-				value_type	tmp(tmp_key, tmp_type);
-				s_tree<Key, T> *node = _tree.insert(tmp);
-				if (node)
-					this->_size++;
-				it++;
-			}
+			// while (it != it2)
+			// {
+			// 	tmp_key = (*it).first;
+			// 	tmp_type = (*it).second;
+			// 	value_type	tmp(tmp_key, tmp_type);
+			// 	insert(tmp);
+			// 	it++;
+			// }
+			insert(other.begin(), other.end());
 			return (*this);
 		}
 
@@ -171,8 +171,8 @@ namespace ft
 			// TOCHECK
 			s_tree<Key, T> *tmp = _tree.search(key);
 			if (tmp == NULL)
-				return (_tree.insert(ft::make_pair<Key, T>(key, T()))->data->second);
-			return (tmp->data->second);
+				return (_tree.insert(ft::make_pair<Key, T>(key, T()))->data.second);
+			return (tmp->data.second);
 		}
 
 		// Iterators
@@ -220,7 +220,7 @@ namespace ft
 		{
 			// TOCHECK returned value (seems now good)
 			bool inserted = false;
-			s_tree<Key, T> *node = _tree.insert(value_type(value.first, value.second));
+			s_tree<Key, T> *node = _tree.insert(ft::make_pair<Key, T>(value.first, value.second));
 			iterator it(node, _tree.TNULL, _tree.maximum(_tree.root));
 			if (node)
 			{
@@ -305,7 +305,7 @@ namespace ft
 			s_tree<Key, T> *tmp = _tree.search(key);
 			if (tmp == NULL)
 				return (end());
-			return (const_iterator(tmp, _tree.TNULL, _tree.maximum(_tree.root)));
+			return (iterator(tmp, _tree.TNULL, _tree.maximum(_tree.root)));
 		}
 
 		ft::pair<iterator, iterator> equal_range(Key const &key)
