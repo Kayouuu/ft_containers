@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 13:38:52 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 14:57:55 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 16:28:13 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@
 
 namespace ft
 {
-	template< typename Key, typename Value, typename T, typename Pair, typename Tree>
+	template< class Pair, class Node, bool is_const>
 	class	RBTreeIterator
 	{
 		private:
 			// Return the lowest value of the tree
-			T	minimum(T	node)
+			Node	minimum(Node node)
 			{
 				while (node->left != NULL && node->left != TNULL)
 					node = node->left;
@@ -30,30 +30,25 @@ namespace ft
 			}
 
 			// Return the highest value of the tree
-			T	maximum(T	node)
+			Node	maximum(Node node)
 			{
 				while (node->right != TNULL && node->right != NULL)
 					node = node->right;
 				return (node);
 			}
 		public:
-			typedef Pair                                          		value_type;
-			typedef ptrdiff_t                                       	difference_type;
-			typedef Pair&                                           	reference;
-			typedef const Pair&                                     	const_reference;
-			typedef Pair										*pointer;
-			typedef const Pair									*const_pointer;
-			typedef T													pointer_node;
-			typedef T													&reference_node;
-			typedef	typename std::bidirectional_iterator_tag			iterator_category;
+			typedef Pair                                          				value_type;
+			typedef ptrdiff_t													difference_type;
+			typedef typename ft::chooseConst<is_const, Pair, const Pair>::type	&reference;
+			typedef	typename ft::chooseConst<is_const, Pair, const Pair>::type	*pointer;
+			typedef Node														*pointer_node;
+			typedef Node														&reference_node;
+			typedef	typename std::bidirectional_iterator_tag					iterator_category;
 
 			// Constructors
 			RBTreeIterator() : _ptr(NULL) { };
 			RBTreeIterator(pointer_node ptr, pointer_node tnull, pointer_node end_node) : _ptr(ptr), end_node(end_node), TNULL(tnull)  { };
 			RBTreeIterator(RBTreeIterator const &copy) { *this = copy; };
-
-			template<class U, class P>
-			RBTreeIterator(const RBTreeIterator<Key, Value, U, P, Tree>& other) : _ptr(other.node()), end_node(other.get_end_node()), TNULL(other.get_TNULL()) { };
 			
 			RBTreeIterator	&operator=(RBTreeIterator const &copy)
 			{
@@ -62,7 +57,7 @@ namespace ft
 				TNULL = copy.TNULL;
 				return (*this);
 			};
-			operator RBTreeIterator<Key, Value, const T, Pair, Tree> () const { return (RBTreeIterator<Key, Value, const T, Pair, Tree>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RBTreeIterator<Pair, Node, true>() const { return (RBTreeIterator<Pair, Node, true>(this->_ptr, this->TNULL, this->end_node)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
 			// Destructor
 			~RBTreeIterator() { };
 
@@ -71,10 +66,8 @@ namespace ft
 			pointer_node			 	get_end_node() const { return (this->end_node); }
 			pointer_node			 	get_TNULL() const { return (this->TNULL); }
 			// Operator overload
-			reference					operator*() { return ((_ptr->data)); }
-			const_reference				operator*() const { return ((_ptr->data)); }
-			pointer						operator->() { return (&(_ptr->data)); }
-			const_pointer				operator->() const { return (&(_ptr->data)); }
+			reference					operator*() const { return ((_ptr->data)); }
+			pointer						operator->() const { return (&(_ptr->data)); }
 	
 			RBTreeIterator	&operator++()
 			{
@@ -107,7 +100,7 @@ namespace ft
 				if (_ptr && _ptr->right && _ptr->right != TNULL)
 				{
 					_ptr = _ptr->right;
-					T cursor = _ptr;
+					Node *cursor = _ptr;
 					if (cursor == TNULL)
 					{
 						_ptr = NULL;
@@ -119,7 +112,7 @@ namespace ft
 				}
 				else
 				{
-					T p = _ptr->parent;
+					Node *p = _ptr->parent;
 					while (p && p != TNULL && _ptr == p->right)
 					{
 						_ptr = p;
@@ -148,7 +141,7 @@ namespace ft
 				if (_ptr && _ptr->left && _ptr->left != TNULL)
 				{
 					_ptr = _ptr->left;
-					T cursor = _ptr;
+					Node *cursor = _ptr;
 					if (cursor == NULL || cursor == TNULL)
 					{
 						_ptr = NULL;
@@ -162,7 +155,7 @@ namespace ft
 				}
 				else
 				{
-					T p = _ptr->parent;
+					Node *p = _ptr->parent;
 					while (p && p != TNULL && _ptr == p->left)
 					{
 						_ptr = p;
@@ -185,11 +178,11 @@ namespace ft
 
 			friend bool operator==(RBTreeIterator const &a, RBTreeIterator const &b) { return (a._ptr == b._ptr); }
 			template <class T2>
-			friend bool	operator==(RBTreeIterator<Key, Value, T, Pair, Tree> const &a, RBTreeIterator<Key, Value, T2, Pair, Tree> const &b) { return (a == b); }
+			friend bool	operator==(RBTreeIterator<Pair, Node, false> const &a, RBTreeIterator<Pair, T2, true> const &b) { return (a == b); }
 			
 			friend bool	operator!=(RBTreeIterator const &a, RBTreeIterator const &b) { return (!(a == b)); }
 			template <class T2>
-			friend bool	operator!=(RBTreeIterator<Key, Value, T, Pair, Tree> const &a, RBTreeIterator<Key, Value, T2, Pair, Tree> const &b) { return (!(a == b)); }
+			friend bool	operator!=(RBTreeIterator<Pair, Node, false> const &a, RBTreeIterator<Pair, T2, true> const &b) { return (!(a == b)); }
 	};
 
 	// template <class Key, class U, class T, typename Cont>
