@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/08 13:38:09 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/09 09:58:34 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:29:34 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ namespace ft
 	struct enable_if<true, T>;
 	
 	template< class InputIt1, class InputIt2 >
-	bool equal( InputIt1 first1, InputIt1 last1, typename ft::enable_if< !ft::is_integral< InputIt2 >::value, InputIt2>::type first2 )
+	bool equal( InputIt1 first1, InputIt1 last1, InputIt2 first2 )
 	{
 		for (; first1 != last1; ++first1, ++first2) {
 			if (!(*first1 == *first2)) {

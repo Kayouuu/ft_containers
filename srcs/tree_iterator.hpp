@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 13:38:52 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 17:03:09 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:38:29 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ namespace ft
 	{
 		private:
 			// Return the lowest value of the tree
-			Node	minimum(Node node)
+			Node	*minimum(Node *node)
 			{
 				while (node->left != NULL && node->left != TNULL)
 					node = node->left;
@@ -30,7 +30,7 @@ namespace ft
 			}
 
 			// Return the highest value of the tree
-			Node	maximum(Node node)
+			Node	*maximum(Node *node)
 			{
 				while (node->right != TNULL && node->right != NULL)
 					node = node->right;
@@ -86,13 +86,6 @@ namespace ft
 			pointer_node	_ptr;
 			pointer_node	end_node;
 			pointer_node	TNULL;
-
-			// bool	is_left_child(T *node)
-			// {
-			// 	if (node && node->parent && node->parent->left)
-			// 		return (node == node->parent->left);
-			// 	return (false);
-			// }
 			
 			pointer_node	next_iter(Node *node)
 			{
@@ -119,13 +112,6 @@ namespace ft
 						return (TNULL);
 				}
 				return (node);
-				// if (node == end_node)
-				// 	return (node->right);
-				// if (node->right != NULL && node->right != TNULL)
-				// 	return (minimum(node->right));
-				// while (node && node->parent && node->parent->left && !is_left_child(node))
-				// 	node = node->parent;
-				// return (node->parent);
 			}
 
 			pointer_node	prev_iter(Node *node)
@@ -157,12 +143,6 @@ namespace ft
 						return (TNULL);
 				}
 				return (node);
-				// if (node->left != NULL && node->left != TNULL)
-				// 	return (maximum(node->left));
-				// T	*node2 = node;
-				// while (is_left_child(node2))
-				// 	node2 = node2->parent;
-				// return (node2->parent);
 			}
 
 
@@ -174,14 +154,4 @@ namespace ft
 			template <class T2>
 			friend bool	operator!=(RBTreeIterator<Pair, Node, false> const &a, RBTreeIterator<Pair, T2, true> const &b) { return (!(a == b)); }
 	};
-
-	// template <class Key, class U, class T, typename Cont>
-	// bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (&*a._ptr->data.first == &*b._ptr->data.first && &*a._ptr->data.second == &*b._ptr->data.second); } // TODO
-	// template <class Key, class U, class T, class T2, typename Cont>
-	// bool	operator==(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (&*a._ptr->data.first == &*b._ptr->data.first && &*a._ptr->data.second == &*b._ptr->data.second); } // TODO
-
-	// template <class Key, class U, class T, typename Cont>
-	// bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T, Cont> const &b) { return (!(&*a == &*b)); }
-	// template <class Key, class U, class T, class T2, typename Cont>
-	// bool	operator!=(RBTreeIterator<Key, U, T, Cont> const &a, RBTreeIterator<Key, U, T2, Cont> const &b) { return (!(&*a == &*b)); }
 }

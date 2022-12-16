@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 17:13:02 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 17:59:37 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -199,15 +199,16 @@ class RedBlackTree
 						s->color = 0;
 						node->parent->color = 1;
 						left_rotate(node->parent);
+						s = node->parent->right;
 					}
-					if (s->left && s->right && s->left->color == 0 && s->right->color == 0) // Makes a node black
+					if (s->left->color == 0 && s->right->color == 0) // Makes a node black
 					{
 						s->color = 1;
 						node = node->parent;
 					}
 					else
 					{
-						if (s->right && s->right->color == 0)
+						if (s->right->color == 0)
 						{
 							s->left->color = 0;
 							s->color = 1;
@@ -216,8 +217,7 @@ class RedBlackTree
 						}
 						s->color = node->parent->color;
 						node->parent->color = 0;
-						if (s->right)
-							s->right->color = 0;
+						s->right->color = 0;
 						left_rotate(node->parent);
 						node = root;
 					}
