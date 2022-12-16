@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 11:00:55 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/16 14:42:24 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,10 +60,11 @@ class RedBlackTree
 {
 	public:
 		typedef s_tree<Key, T>												*Node;
-		typedef	ft::pair<const Key, T>											pair_type;
-		typedef	ft::pair<const Key, T>										const_pair_type;
+		typedef	ft::pair<const Key, T>										pair_type;
 		typedef	typename Alloc::template rebind< s_tree<Key, T> >::other	alloc_type;
 		typedef typename ft::map<Key, T, Comp, Alloc>::value_compare		compare;
+		typedef ft::pair<const Key, T>										*pointer;
+		typedef const ft::pair<const Key, T>								*const_pointer;
 
 		Node						root;
 		Node						TNULL;
