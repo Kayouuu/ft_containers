@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/19 12:21:53 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 15:00:32 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ class RedBlackTree
 			x->parent = y;
 		}
 
-		// TOCHECK
+
 		// if node's color is red, makes it black and vice-versa
 		void	recolor(Node node) { node->color = (node->color == 0) ? 1 : 0; }
 
@@ -187,7 +187,6 @@ class RedBlackTree
 
 		void	fix_erase(Node node) //	need to determine what is node
 		{
-			// TODO	
 			Node	s;
 			while (node != root && node->color == 0)
 			{
@@ -469,7 +468,7 @@ class RedBlackTree
 			return (node);
 		}
 
-		Node	search(Key const &key) const { Comp compare; return (searchEngine(key, this->root, compare)); } // TOCHECK for const
+		Node	search(Key const &key) const { Comp compare; return (searchEngine(key, this->root, compare)); }
 		bool	erase(Key const &key) { Comp compare; return (erase_engine(compare, key)); }
 
 		Node	lower_bound(Key const &key) const { Comp compare; return (lower_bound_engine(key, compare)); }

@@ -6,14 +6,14 @@
 #    By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/10/20 09:59:34 by psaulnie          #+#    #+#              #
-#    Updated: 2022/11/21 14:16:46 by psaulnie         ###   ########.fr        #
+#    Updated: 2022/12/19 15:06:32 by psaulnie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-LST_SRCS = vector_main.cpp
+VECTOR = srcs/vector_main.cpp
+MAP = srcs/map_main.cpp
 
-LST_INCS = ft_containers.hpp \
-			stack.hpp \
+LST_INCS =  stack.hpp \
 			vector.hpp \
 			comparison.hpp \
 			is_integral.hpp \
@@ -23,12 +23,13 @@ CFLAGS = -Wall -Wextra -Werror -std=c++98
 # CFLAGS += -fsanitize=address -g3
 
 CC = c++
-NAME = ft_containers
+NAME = vector_tester
+MNAME = map_tester
 
-SRCS	:=	$(addprefix srcs/,$(LST_SRCS))
 INCS	:=	$(addprefix srcs/,$(LST_INCS))
 
-OBJS = ${SRCS:.cpp=.o}
+VOBJS = ${VECTOR:.cpp=.o}
+MOBJS = ${MAP:.cpp=.o}
 
 .PHONY:	all clean fclean re
 
@@ -37,17 +38,20 @@ all: ${NAME}
 %.o:	%.cpp ${INCS}
 		${CC} ${CFLAGS} -c $< -o $@
 
-${NAME}: ${OBJS}
-		${CC} ${CFLAGS} ${OBJS} -o ${NAME}
+${NAME}: vector map
 
-vector: ${OBJS}
-		${CC} ${CFLAGS} ${OBJS} -o vector
+vector: ${VOBJS}
+		${CC} ${CFLAGS} ${VOBJS} -o ${NAME}
+
+map:	${MOBJS}
+		${CC} ${CFLAGS} ${MOBJS} -o ${MNAME}
 
 clean:
-		rm -f ${OBJS}
+		rm -f ${MOBJS}
+		rm -f ${VOBJS}
 
 fclean: clean
 		rm -f ${NAME}
-		rm -f vector
+		rm -f ${MNAME}
 
 re: fclean all

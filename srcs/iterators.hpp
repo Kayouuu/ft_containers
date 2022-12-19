@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/03 11:32:41 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/14 14:55:22 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:59:24 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ namespace ft
 				_ptr = copy._ptr;
 				return (*this);
 			};
-			operator RandomAccessIterator<const T, Cont> () const { return (RandomAccessIterator<const T, Cont>(this->_ptr)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RandomAccessIterator<const T, Cont> () const { return (RandomAccessIterator<const T, Cont>(this->_ptr)); }
 			// Destructor
 			~RandomAccessIterator() { };
 
@@ -187,11 +187,6 @@ namespace ft
 	RandomAccessIterator<T, Cont>	operator+(typename RandomAccessIterator<T, Cont>::difference_type n, RandomAccessIterator<T, Cont> const &rhs) { return (RandomAccessIterator<T, Cont>(rhs.base() + n)); }
 	template <class T, typename Cont>
 	RandomAccessIterator<T, Cont>	operator+(RandomAccessIterator<T, Cont> const &rhs, typename RandomAccessIterator<T, Cont>::difference_type n) { return (RandomAccessIterator<T, Cont>(rhs.base() + n)); }
-
-	// template <class T, typename Cont>
-	// RandomAccessIterator<T, Cont>	operator-(RandomAccessIterator<T, Cont> const &rhs, typename RandomAccessIterator<T, Cont>::difference_type n) { return (RandomAccessIterator<T, Cont>(rhs.base() - n)); }
-	// template <class T, typename Cont>
-	// RandomAccessIterator<T, Cont>	operator-(typename RandomAccessIterator<T, Cont>::difference_type n, RandomAccessIterator<T, Cont> const &rhs) { return (RandomAccessIterator<T, Cont>(rhs.base() - n)); }
 
 	template <class T, typename Cont>
 	typename RandomAccessIterator<T, Cont>::difference_type	operator-(RandomAccessIterator<T, Cont> const &rhs, RandomAccessIterator<T, Cont> const &lhs) {return (rhs.base() - lhs.base()); }

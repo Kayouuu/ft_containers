@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/19 14:31:18 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 15:00:48 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,6 @@ namespace	ft
 
 			void		realloc(size_type new_capacity, bool n = true)
 			{
-				// if (new_capacity <)
-				// if (_capacity == 0 && new_capacity )
-				// 	new_capacity = 1;
 				if (new_capacity <= this->_capacity * 2 && n)
 				{
 					new_capacity = this->_capacity * 2;
@@ -181,8 +178,6 @@ namespace	ft
 				difference_type	i = std::abs(std::distance(first, last));
 				if (i == 0)
 					return ;
-				// if (i == 0)
-				// 	i++;
 				int	j = 0;
 				if (this->_capacity > 0 && this->_arr != NULL)
 				{

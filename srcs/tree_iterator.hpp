@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/12 13:38:52 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 17:38:29 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 15:00:02 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ namespace ft
 				TNULL = copy.TNULL;
 				return (*this);
 			};
-			operator RBTreeIterator<Pair, Node, true>() const { return (RBTreeIterator<Pair, Node, true>(this->_ptr, this->TNULL, this->end_node)); } // TOCHECK Need to understand this line, used to do the conversion between const and non-const
+			operator RBTreeIterator<Pair, Node, true>() const { return (RBTreeIterator<Pair, Node, true>(this->_ptr, this->TNULL, this->end_node)); }
 			// Destructor
 			~RBTreeIterator() { };
 

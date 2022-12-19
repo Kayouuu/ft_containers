@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/19 14:54:01 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:59:37 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,6 @@ namespace ft
 
 		T &operator[](Key const &key)
 		{
-			// TOCHECK
 			s_tree<Key, T> *tmp = _tree.search(key);
 			if (tmp == NULL)
 			{
@@ -169,7 +168,6 @@ namespace ft
 		// Modifiers
 		void clear()
 		{
-			// TOCHECK
 			iterator it = this->begin();
 			while (*it != (*this->end()))
 			{
@@ -181,7 +179,6 @@ namespace ft
 
 		ft::pair<iterator, bool> insert(value_type const &value)
 		{
-			// TOCHECK returned value (seems now good)
 			bool inserted = false;
 			s_tree<Key, T> *node = _tree.insert(ft::make_pair<Key, T>(value.first, value.second));
 			iterator it;
@@ -198,7 +195,6 @@ namespace ft
 
 		iterator insert(iterator pos, const value_type &value)
 		{
-			// TOCHECK returned value (seems now good)
 			(void)pos;
 			s_tree<Key, T> *node = _tree.insert(value);
 			iterator it(node, _tree.TNULL, _tree.maximum(_tree.root));
@@ -255,7 +251,6 @@ namespace ft
 		// Lookup
 		size_type count(Key const &key) const
 		{
-			// TOCHECK
 			s_tree<Key, T> *node = _tree.search(key);
 			return (node == NULL ? 0 : 1); // If nothing is found, return 0, else 1
 		}
@@ -289,7 +284,6 @@ namespace ft
 
 		iterator lower_bound(Key const &key)
 		{
-			// TODO
 			s_tree<Key, T> *node = _tree.lower_bound(key);
 			if (node == _tree.TNULL)
 				return (end());
@@ -298,7 +292,6 @@ namespace ft
 
 		const_iterator lower_bound(Key const &key) const
 		{
-			// TODO
 			s_tree<Key, T> *node = _tree.lower_bound(key);
 			return (const_iterator(node, _tree.TNULL, _tree.maximum(_tree.root)));
 		}
@@ -320,7 +313,7 @@ namespace ft
 		// Observers
 		key_compare key_comp() const { return (_tree.comp.comp); }
 
-		map::value_compare value_comp() const { return (_tree.comp); } // TOCHECK
+		map::value_compare value_comp() const { return (_tree.comp); }
 
 		friend 	bool operator==( const map& lhs, const map& rhs ) { return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin())); }
 		friend 	bool operator<( const map& lhs, const map& rhs ) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end())); }
