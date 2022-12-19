@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/14 10:11:25 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/14 14:56:36 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:31:18 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 #include <stdexcept>
 #include <memory>
 #include "iterators.hpp"
-#include "ft_containers.hpp"
 #include "is_integral.hpp"
 #include <limits.h>
+#include <iostream>
 
 namespace	ft
 {
@@ -155,8 +155,7 @@ namespace	ft
 			~vector()
 			{
 				this->clear();
-				if (this->_capacity > 0)
-					this->_alloc.deallocate(this->_arr, this->_capacity);
+				this->_alloc.deallocate(this->_arr, this->_capacity);
 			}
 
 			// Assign

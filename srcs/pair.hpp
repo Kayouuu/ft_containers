@@ -6,14 +6,12 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/28 10:00:05 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 11:00:45 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:38:26 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PAIR_HPP
 # define PAIR_HPP
-
-#include "ft_containers.hpp"
 
 namespace ft
 {

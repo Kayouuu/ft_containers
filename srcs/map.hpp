@@ -6,14 +6,13 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 13:28:02 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 18:01:59 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 14:54:01 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MAP_HPP
-#define MAP_HPP
+# define MAP_HPP
 
-// #include "ft_containers.hpp"
 #include "tree.hpp"
 #include "iterators.hpp"
 #include "tree_iterator.hpp"
@@ -76,10 +75,8 @@ namespace ft
 		template <class InputIt>
 		map(InputIt first, InputIt last, Compare const &comp = Compare(), Allocator const &alloc = Allocator()) : _tree(value_compare(comp))
 		{
-			// TODO assign comp to value_compare + add InputIt
+			_size = 0;
 			_alloc = alloc;
-			// size_type size = std::distance(first, last);
-			// this->_size = size;
 			while (first != last)
 			{
 				insert((*first));
@@ -89,31 +86,17 @@ namespace ft
 
 		map(map const &other) :  _tree(value_compare(other._tree.comp.comp)), _alloc(other._alloc)
 		{
-			// TOCHECK
-			// iterator	it = other.begin();
-			// iterator	it2 = other.end();
-
-			// Key	tmp_key = (*it).first;
-			// T	tmp_type = (*it).second;
-			// value_type	tmp(tmp_key, tmp_type);
-
-			// while (it != it2)
-			// {
-			// 	tmp_key = (*it).first;
-			// 	tmp_type = (*it).second;
-			// 	value_type	tmp(tmp_key, tmp_type);
-			// 	insert(tmp);
-			// 	it++;
-			// }
 			insert(other.begin(), other.end());
 		}
 
 		map &operator=(map const &other)
 		{
+			if (_tree.TNULL)
+				_tree.destroy_tnull();
 			_alloc = other._alloc;
 			_tree = RedBlackTree<Key, T, Allocator, Compare>(other._tree.comp.comp);
-			_size = 0;
 			insert(other.begin(), other.end());
+			_size = other._size;
 			return (*this);
 		}
 
@@ -121,6 +104,7 @@ namespace ft
 		~map()
 		{
 			_tree.destroy_tree(_tree.getRoot());
+			_tree.destroy_tnull();
 		}
 
 		// Get_allocator
@@ -348,27 +332,5 @@ namespace ft
 
 	template <class Key, class T, class Compare, class Alloc>
 	void swap(ft::map<Key, T, Compare, Alloc> &lhs, ft::map<Key, T, Compare, Alloc> &rhs) { lhs.swap(rhs); }
-
-	//	TOCHECK
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator==( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return (lhs.size() == rhs.size() && ft::equal(lhs.begin(), lhs.end(), rhs.begin())); }
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator!=( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return (!(lhs == rhs)); }
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator<( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return (ft::lexicographical_compare(lhs.begin(), lhs.end(), rhs.begin(), rhs.end(), lhs.value_compare)); }
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator<=( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return ((lhs < rhs) || (lhs == rhs)); }
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator>( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return (rhs < lhs); }
-	// template< class Key, class T, class Compare, class Alloc >
-	// bool operator>=( const ft::map<Key,T,Compare,Alloc>& lhs,
-	// 				const ft::map<Key,T,Compare,Alloc>& rhs ) { return (!(lhs < rhs) || (lhs == rhs)); }
-
-	
 }
 #endif

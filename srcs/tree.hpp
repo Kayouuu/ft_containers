@@ -6,7 +6,7 @@
 /*   By: psaulnie <psaulnie@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/11/22 16:19:50 by psaulnie          #+#    #+#             */
-/*   Updated: 2022/12/16 17:59:37 by psaulnie         ###   ########.fr       */
+/*   Updated: 2022/12/19 12:21:53 by psaulnie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -378,11 +378,16 @@ class RedBlackTree
 					destroy_tree(node->left);
 				if (node->right && node->right != TNULL)
 					destroy_tree(node->right);
-				
 				this->alloc.deallocate(node, 1);
 			}
 		}
-		
+
+		void	destroy_tnull()
+		{
+			this->alloc.deallocate(TNULL, 1);
+			TNULL = NULL;
+		}
+
 		RedBlackTree(compare c) : comp(c)
 		{
 			TNULL = alloc.allocate(1);
@@ -392,12 +397,7 @@ class RedBlackTree
 			root = TNULL;
 		}
 		
-		~RedBlackTree()
-		{
-			// if (root != TNULL)
-			// 	alloc.deallocate(root, 1);
-			// alloc.deallocate(TNULL, 1);
-		}
+		~RedBlackTree() { }
 
 		s_tree<Key, T>	*insert(pair_type const &pair)
 		{
